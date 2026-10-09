@@ -5,7 +5,7 @@ const CONFIG = Object.freeze({
   sheetName: 'DATA_OPR',
   timezone: 'Asia/Kuala_Lumpur'
 });
-const HEADERS = ['ID', 'TIMESTAMP', 'NAMA GURU', 'SUBJEK', 'KELAS', 'TARIKH', 'TAJUK', 'GAMBAR 1 ID', 'GAMBAR 2 ID', 'GAMBAR 3 ID', 'FOLDER URL'];
+const HEADERS = ['ID', 'TIMESTAMP', 'NAMA GURU', 'SUBJEK', 'KELAS', 'TARIKH', 'TAJUK', 'GAMBAR 1 ID', 'GAMBAR 2 ID', 'GAMBAR 3 ID', 'FOLDER URL', 'OBJEKTIF PEMBELAJARAN'];
 function json_(value) {
   return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -16,6 +16,10 @@ function sheet_() {
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
     sheet.setFrozenRows(1);
   }
+  // Migrasi tab versi lama: tambah objektif di kolum L tanpa mengalih data gambar.
+  if (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length-sheet.getMaxColumns());
+  const oldHeaders = sheet.getRange(1,1,1,11).getDisplayValues()[0];
+  if (oldHeaders.join('|') === HEADERS.slice(0,11).join('|') && !sheet.getRange(1,12).getDisplayValue()) sheet.getRange(1,12).setValue(HEADERS[11]);
   const actual = sheet.getRange(1, 1, 1, HEADERS.length).getDisplayValues()[0];
   if (actual.join('|') !== HEADERS.join('|')) throw new Error('Header DATA_OPR tidak sepadan. Namakan semula tab lama sebelum menjalankan setup.');
   return sheet;
@@ -27,7 +31,7 @@ function setup() {
   console.log('Sedia: ' + sheet.getName() + ' / ' + folder.getName());
 }
 function record_(row) {
-  return {id: row[0], timestamp: row[1], namaGuru: row[2], subjek: row[3], kelas: row[4], tarikh: row[5], tajuk: row[6], imageIds: row.slice(7, 10), folderUrl: row[10], cloudSaved: true};
+  return {id: row[0], timestamp: row[1], namaGuru: row[2], subjek: row[3], kelas: row[4], tarikh: row[5], tajuk: row[6], objektif: row[11] || '', imageIds: row.slice(7, 10), folderUrl: row[10], cloudSaved: true};
 }
 function records_() {
   const sheet = sheet_();
@@ -39,10 +43,16 @@ function doGet(e) {
     if (params.action === 'getRecords') return json_(records_());
     if (params.action === 'getThumbnail') {
       const record = records_().find(r => r.id === params.id);
-      if (!record || !record.imageIds[0]) throw new Error('Gambar previu tidak ditemukan.');
-      const file = DriveApp.getFileById(record.imageIds[0]);
-      const blob = file.getThumbnail() || file.getBlob();
-      return json_({status:'success',thumbnail:'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes())});
+      if (!record) throw new Error('Gambar previu tidak ditemukan.');
+      const thumbnails = record.imageIds.map(id => {
+        if (!id) return null;
+        try {
+          const file = DriveApp.getFileById(id);
+          const blob = file.getThumbnail() || file.getBlob();
+          return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+        } catch(error) { console.warn('Previu gambar tidak tersedia: '+id); return null; }
+      });
+      return json_({status:'success',thumbnail:thumbnails[0],thumbnails:thumbnails});
     }
     if (params.action === 'getRecord') {
       const record = records_().find(r => r.id === params.id);
@@ -92,6 +102,8 @@ function doPost(e) {
     const tarikh = text_(payload.tarikh, 'Tarikh', 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(tarikh) || isNaN(Date.parse(tarikh)) || new Date(tarikh).toISOString().slice(0,10) !== tarikh) throw new Error('Tarikh tidak sah.');
     const tajuk = text_(payload.tajuk, 'Tajuk', 5000);
+    const objektif = String(payload.objektif || '').trim();
+    if (objektif.length > 5000) throw new Error('Objektif maksimum 5000 aksara.');
     const images = validateImages_(payload.images);
     lock.waitLock(30000); acquired = true;
     const sheet = sheet_();
@@ -100,7 +112,7 @@ function doPost(e) {
     folder = DriveApp.getFolderById(CONFIG.folderId).createFolder(id + '_' + tarikh);
     const imageIds = images.map((image, i) => folder.createFile(Utilities.newBlob(image.bytes, image.mime, 'Gambar_' + (i + 1) + '.' + image.ext)).getId());
     const timestamp = Utilities.formatDate(new Date(), CONFIG.timezone, 'yyyy-MM-dd HH:mm:ss');
-    const row = [id, timestamp, safeCell_(guru), safeCell_(subjek), safeCell_(kelas), tarikh, safeCell_(tajuk)].concat(imageIds, [folder.getUrl()]);
+    const row = [id, timestamp, safeCell_(guru), safeCell_(subjek), safeCell_(kelas), tarikh, safeCell_(tajuk)].concat(imageIds, [folder.getUrl(), safeCell_(objektif)]);
     const next = sheet.getLastRow() + 1;
     sheet.getRange(next, 1, 1, HEADERS.length).setNumberFormat('@').setValues([row]);
     committed = true;

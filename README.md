@@ -1,8 +1,16 @@
+# Kemaskini carian guru, objektif dan PDF satu halaman
+
+- Carian nama guru di sebelah dropdown dalam Borang Input dan Arkib OPR menapis pilihan nama.
+- Objektif pembelajaran dipaparkan di bawah tajuk, disimpan dalam kolum L DATA_OPR dan diambil semula dalam laporan. Rekod lama kekal dan objektifnya dipaparkan sebagai tanda -.
+- Cetak / Simpan PDF menskalakan laporan kepada satu halaman A4 potret. Tunggu gambar siap sebelum cetak; kandungan panjang diskalakan lebih kecil.
+- Gantikan index.html di GitHub dan Code.gs dalam Apps Script. Jalankan setup, kemudian Deploy → Manage deployments → Edit → New version → Deploy. Kekalkan URL sedia ada. Tiada keperluan resetAdmin jika akaun sudah berfungsi.
+- Kod akan menambah header OBJEKTIF PEMBELAJARAN di kolum L secara automatik untuk tab versi lama; tidak perlu namakan semula DATA_OPR jika 11 header asal sepadan.
+
 # Sistem OPR PdPR / PdPC — SK Sungai Tiram
 
 ## Kemaskini paparan
 - Lencana utama menggunakan https://iili.io/nGTnxcu.png daripada pautan cikgu; salinan PNG dalam assets sebagai sandaran.
-- Rekod dipaparkan sebagai kad. Klik kad untuk membuka laporan penuh bersama gambar.
+- Rekod dipaparkan sebagai kad tanpa previu gambar. Klik kad untuk membuka laporan penuh bersama gambar.
 - Tiga gambar bersebelahan, tanpa ruang tandatangan.
 - Font Manrope dan Outfit, animasi hover serta sokongan pilihan reduced motion.
 - Untuk kemaskini versi admin, gantikan index.html di GitHub, gantikan Code.gs dalam Apps Script, Run resetAdmin dan deploy New version. Refresh halaman selepas GitHub Pages selesai deploy.
@@ -13,12 +21,10 @@
 - `Code.gs`: kod backend Google Apps Script.
 - `appsscript.json`: manifest Apps Script.
 
-## Previu kad dan pembetulan log masuk
-1. Gantikan Code.gs dalam Apps Script dengan versi dalam ZIP ini.
-2. Run fungsi resetAdmin. Akaun gurucemerlang ditetapkan semula kepada kata laluan asal yang cikgu minta. Sesi lama dibatalkan.
-3. Deploy → Manage deployments → Edit → New version → Deploy. Kekalkan URL /exec yang sama.
-4. Gantikan index.html di GitHub dan tunggu GitHub Pages siap, kemudian refresh halaman.
-5. Setiap kad memaparkan gambar pertama sebagai previu. Klik kad untuk laporan penuh. API getThumbnail mengambil thumbnail Drive; jika thumbnail belum tersedia, API menggunakan gambar asal. Gambar tidak perlu dikongsi secara awam di Drive.
+## Arkib tanpa previu gambar
+Kad Arkib OPR hanya memaparkan maklumat laporan. Tiada permintaan gambar atau thumbnail dibuat semasa arkib dimuatkan. Tiga gambar dimuatkan hanya selepas klik Papar laporan penuh.
+
+Untuk versi ini, gantikan index.html di GitHub. Kod Apps Script sedia ada masih serasi; tidak perlu deploy semula jika versi sebelumnya sudah dipasang.
 
 ## Fungsi Admin dan Arkib OPR
 - Tab Rekod Disimpan dinamakan Arkib OPR.
@@ -55,7 +61,7 @@
 5. Cuba dari peranti lain untuk memastikan rekod datang daripada Sheet, bukan cache peranti.
 
 ## Cara penyimpanan
-- Kolum DATA_OPR: ID, TIMESTAMP, NAMA GURU, SUBJEK, KELAS, TARIKH, TAJUK, GAMBAR 1 ID, GAMBAR 2 ID, GAMBAR 3 ID, FOLDER URL.
+- Kolum DATA_OPR: ID, TIMESTAMP, NAMA GURU, SUBJEK, KELAS, TARIKH, TAJUK, GAMBAR 1 ID, GAMBAR 2 ID, GAMBAR 3 ID, FOLDER URL, OBJEKTIF PEMBELAJARAN.
 - `saveOPR` (POST JSON melalui Content-Type text/plain): menyimpan data dan 3 gambar JPEG/PNG/WebP, maksimum 5 MB setiap gambar.
 - `getRecords` (GET): senarai metadata tanpa memuatkan semua gambar.
 - `adminLogin`, `adminLogout`, `deleteOPR` (POST): log masuk, keluar dan padam dengan token sesi admin.

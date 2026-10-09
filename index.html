@@ -122,7 +122,7 @@
 
                 border: none !important;
 
-                page-break-after: always;
+                page-break-after: avoid;
 
                 page-break-inside: avoid;
 
@@ -196,7 +196,19 @@
         .record-card {cursor:pointer;}
         @media(prefers-reduced-motion:reduce) { *,*:before,*:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;} }
 
-    </style>
+    
+        .teacher-picker {display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,.8fr);gap:8px;}
+        .teacher-picker select {min-width:0;}
+        #opr-out-tajuk,#opr-out-objektif {overflow-wrap:anywhere;white-space:pre-wrap;}
+        @media print {
+            html,body {width:210mm!important;height:297mm!important;overflow:hidden!important;margin:0!important;padding:0!important;}
+            main {position:relative!important;width:210mm!important;max-width:none!important;height:297mm!important;margin:0!important;padding:0!important;}
+            #section-preview {display:block!important;margin:0!important;padding:0!important;}
+            #opr-template {position:absolute!important;top:10mm!important;left:15mm!important;width:180mm!important;height:auto!important;min-height:0!important;max-height:none!important;padding:0!important;margin:0!important;transform:scale(var(--opr-print-scale,1))!important;transform-origin:top left!important;break-after:avoid!important;page-break-after:avoid!important;}
+            #opr-template .opr-photo {height:65mm!important;}
+            dialog {display:none!important;}
+        }
+</style>
 
 </head>
 
@@ -313,11 +325,11 @@
 
                             <div class="relative">
 
-                                <select id="namaGuru" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3 appearance-none">
+                                <div class="teacher-picker"><select id="namaGuru" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3 appearance-none">
 
                                     <option value="">-- Pilih Nama Guru --</option>
 
-                                </select>
+                                </select><input type="search" id="searchGuruInput" placeholder="Cari nama guru..." aria-label="Cari nama guru" oninput="searchTeachers('namaGuru',this.value)" class="bg-white border border-slate-300 text-sm rounded-xl p-3 min-w-0"></div>
 
                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
 
@@ -381,6 +393,10 @@
 
 
 
+                    <div>
+                        <label for="objektif" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Objektif Pembelajaran</label>
+                        <textarea id="objektif" rows="3" maxlength="5000" placeholder="Nyatakan objektif pembelajaran yang ingin dicapai..." class="w-full bg-slate-50 border border-slate-300 text-sm rounded-xl p-3"></textarea>
+                    </div>
                     <!-- Muat Naik Gambar Section -->
 
                     <div>
@@ -487,7 +503,7 @@
 
                     </button>
 
-                    <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-johorRed hover:bg-red-700 text-white text-xs font-bold shadow flex items-center gap-1.5 transition">
+                    <button onclick="printOnePage()" class="px-5 py-2 rounded-xl bg-johorRed hover:bg-red-700 text-white text-xs font-bold shadow flex items-center gap-1.5 transition">
 
                         <i class="fa-solid fa-print"></i> Cetak A4 / Simpan PDF
 
@@ -605,6 +621,10 @@
 
 
 
+                        <div class="bg-slate-50 border border-slate-300 rounded-lg p-3 mb-4 text-xs">
+                            <h3 class="font-bold text-johorBlue mb-2">OBJEKTIF PEMBELAJARAN:</h3>
+                            <p id="opr-out-objektif" class="text-slate-800 whitespace-pre-wrap leading-relaxed">-</p>
+                        </div>
                         <!-- Three photos in one row -->
                         <div class="mb-6">
                             <h3 class="text-xs font-extrabold text-johorBlue uppercase tracking-wider mb-3"><i class="fa-solid fa-camera text-johorRed"></i> RAKAMAN GAMBAR AKTIVITI / TUGASAN MURID</h3>
@@ -671,11 +691,11 @@
 
                         <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Tapis Nama Guru</label>
 
-                        <select id="filterGuru" onchange="applyFilters()" class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
+                        <div class="teacher-picker"><select id="filterGuru" onchange="applyFilters()" class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
 
                             <option value="">Semua Guru</option>
 
-                        </select>
+                        </select><input type="search" id="searchGuruArkib" placeholder="Cari nama guru..." aria-label="Cari nama guru" oninput="searchTeachers('filterGuru',this.value)" class="bg-white border border-slate-300 text-sm rounded-xl p-3 min-w-0"></div>
 
                     </div>
 
@@ -927,6 +947,7 @@
             const tarikh = document.getElementById('tarikh').value;
 
             const tajuk = document.getElementById('tajuk').value.trim();
+            const objektif = document.getElementById('objektif').value.trim();
 
 
 
@@ -963,6 +984,7 @@
                 tarikh,
 
                 tajuk,
+                objektif,
 
                 images: uploadedBase64Images.map(img => img.data),
 
@@ -997,6 +1019,7 @@
 
 
             document.getElementById('opr-out-tajuk').innerText = data.tajuk || '-';
+            document.getElementById('opr-out-objektif').innerText = data.objektif || '-';
 
             document.getElementById('opr-out-timestamp').innerText = `Tarikh Cetakan: ${data.timestamp || new Date().toLocaleString('ms-MY')}`;
 
@@ -1050,7 +1073,7 @@
         async function handleFormSubmit(event) {
             event.preventDefault();
             const record = getFormData(); if (!record) return;
-            const fingerprint = JSON.stringify([record.namaGuru,record.subjek,record.kelas,record.tarikh,record.tajuk,record.images]);
+            const fingerprint = JSON.stringify([record.namaGuru,record.subjek,record.kelas,record.tarikh,record.tajuk,record.objektif,record.images]);
             if (pendingSave && pendingSave.fingerprint === fingerprint) record.id = pendingSave.id;
             pendingSave = {id:record.id, fingerprint};
             const btn = document.getElementById('submitBtn'), original = btn.innerHTML;
@@ -1059,7 +1082,7 @@
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, redirect:'follow',
-                    body:JSON.stringify({action:'saveOPR',id:record.id,namaGuru:record.namaGuru,subjek:record.subjek,kelas:record.kelas,tarikh:record.tarikh,tajuk:record.tajuk,images:uploadedBase64Images})
+                    body:JSON.stringify({action:'saveOPR',id:record.id,namaGuru:record.namaGuru,subjek:record.subjek,kelas:record.kelas,tarikh:record.tarikh,tajuk:record.tajuk,objektif:record.objektif,images:uploadedBase64Images})
                 });
                 if (!response.ok) throw new Error('HTTP '+response.status);
                 const result = await response.json();
@@ -1253,6 +1276,8 @@
         function resetForm() {
 
             document.getElementById('oprForm').reset();
+            document.getElementById('searchGuruInput').value='';
+            searchTeachers('namaGuru','');
 
             uploadedBase64Images = [];
 
@@ -1419,6 +1444,36 @@ async function deleteReport(record,button) {
         alert('Laporan belum dapat dipadam: '+err.message);button.disabled=false;button.textContent='Padam OPR';
     }
 }
+</script>
+<script>
+function searchTeachers(selectId,query) {
+    const select=document.getElementById(selectId);
+    const previous=select.value;
+    const all=[...new Set([...teacherList,...savedRecordsList.map(r=>r.namaGuru).filter(Boolean)])];
+    const q=query.trim().toLocaleLowerCase('ms');
+    const matches=all.filter(name=>name.toLocaleLowerCase('ms').includes(q));
+    fillSelect(selectId,matches,selectId==='namaGuru'?'-- Pilih Nama Guru --':'Semua Guru');
+    if(previous && all.includes(previous) && !matches.includes(previous))select.add(new Option(previous,previous));
+    if(previous)select.value=previous;
+    if(selectId==='filterGuru')applyFilters();
+}
+function preparePrintScale() {
+    const original=document.getElementById('opr-template');
+    const clone=original.cloneNode(true);
+    clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    Object.assign(clone.style,{position:'absolute',left:'-10000px',top:'0',width:'180mm',height:'auto',minHeight:'0',maxHeight:'none',padding:'0',margin:'0',transform:'none',visibility:'hidden'});
+    clone.querySelectorAll('.opr-photo').forEach(el=>el.style.height='65mm');
+    document.body.appendChild(clone);
+    const maxHeight=277*96/25.4;
+    const scale=Math.min(1,(maxHeight-4)/Math.max(clone.scrollHeight,clone.getBoundingClientRect().height));
+    original.style.setProperty('--opr-print-scale',String(scale));clone.remove();
+}
+async function printOnePage() {
+    if(document.fonts)await document.fonts.ready;
+    await Promise.all([...document.querySelectorAll('#opr-template img')].map(img=>img.decode?.().catch(()=>{})));
+    preparePrintScale();window.print();
+}
+window.addEventListener('beforeprint',preparePrintScale);
 </script>
 </body>
 
