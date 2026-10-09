@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+
+<html lang="ms">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sistem Jana OPR Automatik - SK Sungai Tiram</title>
+
+
+
+    <!-- PWA Primary Meta Tags -->
+
+    <meta name="theme-color" content="#0f2b5c">
+
+    <meta name="description" content="Sistem Penjanaan One Page Report (OPR) Automatik SK Sungai Tiram, Johor">
+
+    <link rel="apple-touch-icon" data-school-icon="true">
+
+
+
+    <!-- Tailwind CSS CDN -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+
+        tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        johorBlue: '#001f54',
+
+                        johorNavy: '#0a1128',
+
+                        johorRed: '#d90429',
+
+                        johorRedDark: '#9e0059',
+
+                        johorYellow: '#ffb703',
+
+                        johorLight: '#f8fafc'
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    </script>
+
+
+
+    <!-- FontAwesome & Google Fonts -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+
+    <style>
+
+        body {
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            background-color: #f1f5f9;
+
+        }
+
+
+
+        /* Print Media Styles for Exact A4 Page Layout */
+
+        @media print {
+
+            body {
+
+                background: white !important;
+
+                padding: 0 !important;
+
+                margin: 0 !important;
+
+            }
+
+            .no-print {
+
+                display: none !important;
+
+            }
+
+            .print-only {
+
+                display: block !important;
+
+            }
+
+            #opr-template {
+
+                width: 210mm !important;
+
+                height: 296mm !important;
+
+                max-height: 296mm !important;
+
+                margin: 0 auto !important;
+
+                padding: 12mm 15mm !important;
+
+                box-shadow: none !important;
+
+                border: none !important;
+
+                page-break-after: always;
+
+                page-break-inside: avoid;
+
+            }
+
+            @page {
+
+                size: A4 portrait;
+
+                margin: 0;
+
+            }
+
+        }
+
+
+
+        /* Responsive A4 Container Preview */
+
+        .a4-container {
+
+            width: 210mm;
+
+            min-height: 297mm;
+
+            background: white;
+
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .a4-container {
+
+                width: 100%;
+
+                min-height: auto;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body class="min-h-screen flex flex-col text-slate-800">
+
+
+
+    <!-- Application Header (No-Print) -->
+
+    <header class="no-print bg-gradient-to-r from-johorNavy via-johorBlue to-johorRed text-white shadow-lg sticky top-0 z-50">
+
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+
+            <div class="flex items-center gap-3 text-center md:text-left">
+
+                <img data-school-logo="true"
+
+                     alt="Lencana SK Sungai Tiram"
+
+                     class="w-12 h-14 object-contain bg-white/10 p-1 rounded-lg backdrop-blur-sm border border-white/20">
+
+                <div>
+
+                    <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-tight">SEKOLAH KEBANGSAAN SUNGAI TIRAM</h1>
+
+                    <p class="text-xs text-blue-200 font-medium">Sistem Penjanaan One Page Report (OPR) PdPR / PdPC</p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Navigation Tabs -->
+
+            <nav class="flex bg-white/10 p-1 rounded-xl backdrop-blur-md border border-white/20 text-sm font-semibold">
+
+                <button id="tab-form-btn" onclick="switchTab('form')" class="px-4 py-2 rounded-lg transition-all flex items-center gap-2 bg-white text-johorBlue shadow">
+
+                    <i class="fa-solid fa-pen-to-square"></i> Borang Input
+
+                </button>
+
+                <button id="tab-preview-btn" onclick="switchTab('preview')" class="px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-white hover:bg-white/10">
+
+                    <i class="fa-solid fa-file-invoice"></i> Pra-tonton OPR
+
+                </button>
+
+                <button id="tab-records-btn" onclick="switchTab('records')" class="px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-white hover:bg-white/10">
+
+                    <i class="fa-solid fa-folder-open"></i> Rekod Disimpan
+
+                </button>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- Main Content Container -->
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+
+
+        <!-- SECTION 1: BORANG INPUT OPR -->
+
+        <section id="section-form" class="no-print space-y-6">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+
+                <div class="border-b border-slate-100 pb-4 mb-6 flex items-center justify-between">
+
+                    <div>
+
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+
+                            <span class="w-2 h-6 bg-johorRed rounded-full inline-block"></span>
+
+                            Masukkan Maklumat PdPR / Aktiviti
+
+                        </h2>
+
+                        <p class="text-xs text-slate-500 mt-1">Lengkapkan maklumat di bawah untuk menjana OPR secara automatik.</p>
+
+                    </div>
+
+                    <span id="teacher-status" class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-johorBlue font-medium border border-blue-100 flex items-center gap-1.5">
+
+                        <i class="fa-solid fa-spinner fa-spin text-johorBlue"></i> Memuatkan senarai guru, subjek dan kelas...
+
+                    </span>
+
+                </div>
+
+
+
+                <button type="button" onclick="loadReferenceLists()" class="text-xs text-johorBlue underline mb-4">Muat semula senarai guru, subjek dan kelas</button>
+<form id="oprForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+
+                        <!-- Nama Guru Dropdown -->
+
+                        <div>
+
+                            <label for="namaGuru" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Guru <span class="text-red-500">*</span></label>
+
+                            <div class="relative">
+
+                                <select id="namaGuru" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3 appearance-none">
+
+                                    <option value="">-- Pilih Nama Guru --</option>
+
+                                </select>
+
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Subjek -->
+
+                        <div>
+
+                            <label for="subjek" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Subjek / Mata Pelajaran <span class="text-red-500">*</span></label>
+
+                            <select id="subjek" required disabled class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3"><option value="">Memuatkan subjek...</option></select>
+
+                        </div>
+
+
+
+                        <!-- Kelas -->
+
+                        <div>
+
+                            <label for="kelas" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Kelas <span class="text-red-500">*</span></label>
+
+                            <select id="kelas" required disabled class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3"><option value="">Memuatkan kelas...</option></select>
+
+                        </div>
+
+
+
+                        <!-- Tarikh -->
+
+                        <div>
+
+                            <label for="tarikh" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Tarikh <span class="text-red-500">*</span></label>
+
+                            <input type="date" id="tarikh" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Tajuk / Aktiviti -->
+
+                    <div>
+
+                        <label for="tajuk" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Tajuk / Modul / Aktiviti Pembelajaran <span class="text-red-500">*</span></label>
+
+                        <textarea id="tajuk" rows="3" required placeholder="Nyatakan tajuk pembelajaran, kemahiran atau aktiviti PdPR yang dijalankan..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3"></textarea>
+
+                    </div>
+
+
+
+                    <!-- Muat Naik Gambar Section -->
+
+                    <div>
+
+                        <div class="flex justify-between items-center mb-2">
+
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Muat Naik Gambar PdPR (Tepat 3 Gambar) <span class="text-red-500">*</span></label>
+
+                            <span id="img-count" class="text-xs font-semibold text-johorBlue bg-blue-50 px-2 py-0.5 rounded">0 / 3 Gambar</span>
+
+                        </div>
+
+
+
+                        <div class="border-2 border-dashed border-slate-300 hover:border-johorBlue rounded-2xl p-6 text-center bg-slate-50/50 transition-all">
+
+                            <input type="file" id="imageFiles" accept="image/*" multiple onchange="handleImageUpload(event)" class="hidden">
+
+                            <label for="imageFiles" class="cursor-pointer flex flex-col items-center justify-center gap-2">
+
+                                <div class="w-12 h-12 rounded-full bg-blue-100 text-johorBlue flex items-center justify-center text-xl shadow-sm">
+
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                </div>
+
+                                <span class="text-sm font-semibold text-slate-700">Klik untuk pilih gambar dari peranti</span>
+
+                                <span class="text-xs text-slate-400">Pilih tepat 3 fail gambar (JPG, PNG)</span>
+
+                            </label>
+
+                        </div>
+
+
+
+                        <!-- Image Preview Grid -->
+
+                        <div id="image-preview-container" class="grid grid-cols-3 gap-4 mt-4 hidden">
+
+                            <!-- JS Inject previews here -->
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Action Buttons -->
+
+                    <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3">
+
+                        <button type="button" onclick="resetForm()" class="px-5 py-3 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 text-sm font-semibold transition">
+
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+
+                        </button>
+
+                        <button type="button" onclick="generatePreviewOnly()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold shadow transition">
+
+                            <i class="fa-solid fa-eye mr-1"></i> Pra-tonton Sahaja
+
+                        </button>
+
+                        <button type="submit" id="submitBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-johorBlue to-johorRed hover:opacity-95 text-white text-sm font-bold shadow-md transition flex items-center justify-center gap-2">
+
+                            <i class="fa-solid fa-paper-plane"></i> Simpan & Jana OPR
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SECTION 2: PRA-TONTON OPR (A4 PRINT TEMPLATE) -->
+
+        <section id="section-preview" class="hidden">
+
+
+
+            <!-- Controls Bar above preview -->
+
+            <div class="no-print mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+
+                <div class="flex items-center gap-2">
+
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+
+                    <span class="text-sm font-bold text-slate-700">OPR Sedia Untuk Dicetak / Di-eksport</span>
+
+                </div>
+
+                <div class="flex gap-2">
+
+                    <button onclick="switchTab('form')" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold">
+
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Edit Maklumat
+
+                    </button>
+
+                    <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-johorRed hover:bg-red-700 text-white text-xs font-bold shadow flex items-center gap-1.5 transition">
+
+                        <i class="fa-solid fa-print"></i> Cetak A4 / Simpan PDF
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- A4 Document Wrapper -->
+
+            <div class="flex justify-center">
+
+                <div id="opr-template" class="a4-container p-8 border border-slate-200 relative flex flex-col justify-between">
+
+
+
+                    <!-- Top Johor Color Accent Stripes -->
+
+                    <div>
+
+                        <div class="h-2 w-full bg-johorBlue rounded-t-sm"></div>
+
+                        <div class="h-1 w-full bg-johorRed mb-4"></div>
+
+
+
+                        <!-- OPR School Header -->
+
+                        <div class="flex items-center justify-between border-b-2 border-johorBlue pb-4 mb-4">
+
+                            <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+
+                                <img data-school-logo="true"
+
+                                     alt="Lencana Sekolah"
+
+                                     class="max-h-24 max-w-24 object-contain">
+
+                            </div>
+
+                            <div class="text-center flex-grow px-4">
+
+                                <h2 class="text-xs tracking-widest font-bold text-johorRed uppercase">Laporan Bergambar Aktiviti (OPR)</h2>
+
+                                <h1 class="text-xl sm:text-2xl font-black text-johorBlue tracking-tight uppercase leading-tight">SEKOLAH KEBANGSAAN SUNGAI TIRAM</h1>
+
+                                <p class="text-xs font-semibold text-slate-600">81800 ULU TIRAM, JOHOR DARUL TA'ZIM</p>
+
+                                <p class="text-[10px] font-medium text-slate-500 mt-0.5">REKOD PELAKSANAAN PENGAJARAN & PEMBELAJARAN (PdPR / PdPC)</p>
+
+                            </div>
+
+                            <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center opacity-0">
+
+                                <!-- Spacer to balance layout -->
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Info Metadata Box -->
+
+                        <div class="bg-slate-50 border border-slate-300 rounded-lg p-3 mb-4 text-xs">
+
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+
+                                <div class="flex">
+
+                                    <span class="w-28 font-bold text-johorBlue">NAMA GURU:</span>
+
+                                    <span id="opr-out-guru" class="font-semibold text-slate-800 uppercase flex-1 border-b border-dotted border-slate-400">-</span>
+
+                                </div>
+
+                                <div class="flex">
+
+                                    <span class="w-28 font-bold text-johorBlue">SUBJEK:</span>
+
+                                    <span id="opr-out-subjek" class="font-semibold text-slate-800 flex-1 border-b border-dotted border-slate-400">-</span>
+
+                                </div>
+
+                                <div class="flex">
+
+                                    <span class="w-28 font-bold text-johorBlue">KELAS:</span>
+
+                                    <span id="opr-out-kelas" class="font-semibold text-slate-800 flex-1 border-b border-dotted border-slate-400">-</span>
+
+                                </div>
+
+                                <div class="flex">
+
+                                    <span class="w-28 font-bold text-johorBlue">TARIKH:</span>
+
+                                    <span id="opr-out-tarikh" class="font-semibold text-slate-800 flex-1 border-b border-dotted border-slate-400">-</span>
+
+                                </div>
+
+                            </div>
+
+                            <div class="mt-2 flex">
+
+                                <span class="w-28 font-bold text-johorBlue flex-shrink-0">TAJUK / AKTIVITI:</span>
+
+                                <span id="opr-out-tajuk" class="font-semibold text-slate-800 flex-1 border-b border-dotted border-slate-400 leading-relaxed">-</span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- 2x2 Photo Layout Container -->
+
+                        <div class="mb-4">
+
+                            <h3 class="text-xs font-extrabold text-johorBlue uppercase tracking-wider mb-2 flex items-center gap-1.5">
+
+                                <i class="fa-solid fa-camera text-johorRed"></i> RAKAMAN GAMBAR AKTIVITI / TUGASAN MURID
+
+                            </h3>
+
+                            <div id="opr-out-images" class="grid grid-cols-2 gap-3">
+
+                                <!-- Placeholders for 4 images -->
+
+                        <!-- 3 Photo Layout Container -->
+
+                        <div class="mb-6">
+
+                            <h3 class="text-xs font-extrabold text-johorBlue uppercase tracking-wider mb-3 flex items-center gap-1.5">
+
+                                <i class="fa-solid fa-camera text-johorRed"></i> RAKAMAN GAMBAR AKTIVITI / TUGASAN MURID
+
+                            </h3>
+
+                            <div id="opr-out-images" class="grid grid-cols-3 gap-3">
+
+                                <!-- Placeholders for 3 images -->
+
+                                <div class="h-56 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-xs font-medium">Gambar 1</div>
+
+                                <div class="h-56 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-xs font-medium">Gambar 2</div>
+
+                                <div class="h-56 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-xs font-medium">Gambar 3</div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Signatures & Verification Footer -->
+
+                    <div class="pt-4 border-t border-slate-300 text-xs mt-auto">
+
+                        <div class="flex justify-between items-end">
+
+                            <div>
+
+                                <p class="text-[10px] text-slate-500 mb-8">Disediakan Oleh:</p>
+
+                                <div class="border-b border-slate-400 w-64 mb-1"></div>
+
+                                <p id="opr-out-guru-sign" class="font-bold text-slate-800 uppercase text-[11px]">(NAMA GURU)</p>
+
+                                <p class="text-[10px] text-slate-500">Guru Subjek, SK Sungai Tiram</p>
+
+                            </div>
+
+                            <div class="text-right text-[10px] text-slate-400">
+
+                                <p>Jana Automatik Melalui Sistem OPR SKST</p>
+
+                                <p id="opr-out-timestamp">Tarikh Cetakan: -</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SECTION 3: SENARAI REKOD DISIMPAN -->
+
+        <section id="section-records" class="no-print space-y-6 hidden">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+
+                    <div>
+
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+
+                            <span class="w-2 h-6 bg-johorBlue rounded-full inline-block"></span>
+
+                            Senarai Rekod OPR Tersimpan
+
+                        </h2>
+
+                        <p class="text-xs text-slate-500 mt-1">Cari, tapis, dan semak semula rekod OPR yang pernah dijana.</p>
+
+                    </div>
+
+                    <button onclick="fetchSavedRecords()" class="self-start md:self-auto px-4 py-2 bg-blue-50 text-johorBlue hover:bg-blue-100 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-blue-200">
+
+                        <i class="fa-solid fa-arrows-rotate"></i> Muat Semula Data
+
+                    </button>
+
+                </div>
+
+
+
+                <p id="records-status" role="status" class="text-xs text-slate-600 mb-4">Memuatkan rekod daripada Google Sheet...</p>
+<!-- Filters Bar -->
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+
+                    <div>
+
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Tapis Nama Guru</label>
+
+                        <select id="filterGuru" onchange="applyFilters()" class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
+
+                            <option value="">Semua Guru</option>
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Tapis Subjek</label>
+
+                        <select id="filterSubjek" onchange="applyFilters()" class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
+
+                            <option value="">Semua Subjek</option>
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Tapis Kelas</label>
+
+                        <select id="filterKelas" onchange="applyFilters()" class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
+
+                            <option value="">Semua Kelas</option>
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Carian Tarikh / Tajuk</label>
+
+                        <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Cari..." class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Records Table -->
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+
+                    <table class="w-full text-left text-xs">
+
+                        <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider border-b border-slate-200">
+
+                            <tr>
+
+                                <th class="p-3">#</th>
+
+                                <th class="p-3">Tarikh</th>
+
+                                <th class="p-3">Nama Guru</th>
+
+                                <th class="p-3">Subjek</th>
+
+                                <th class="p-3">Kelas</th>
+
+                                <th class="p-3">Tajuk / Aktiviti</th>
+
+                                <th class="p-3 text-center">Tindakan</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="records-table-body" class="divide-y divide-slate-100 bg-white">
+
+                            <tr>
+
+                                <td colspan="7" class="p-8 text-center text-slate-400">
+
+                                    <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
+
+                                    <p>Memuatkan rekod OPR...</p>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+    </main>
+
+
+
+    <script>
+
+        // Web App Configurations & Data Endpoints
+
+        const TEACHERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiP59NmpIynQb8qEOi5TILy6ewF9fRJw2ofT__72bGGUskxEkoZUqYQPIUuabtQqD8F7M17jqKZnVd/pub?gid=0&single=true&output=csv";
+
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby192vPA6OrmGJgN1OR78LbPyCOosV65NaLSfLWBaMpB0pSSPPSFyMxeLBUN1NDc6n5/exec";
+
+
+
+        // Application State Variables
+
+        let uploadedBase64Images = [];
+
+        let savedRecordsList = [];
+
+        let filteredRecordsList = [];
+
+        let teacherList = [];
+
+
+
+        // Compress image before saving to base64 to ensure fast and reliable Apps Script upload
+
+        function compressImage(file, maxWidth = 1000, quality = 0.75) {
+
+            return new Promise((resolve, reject) => {
+
+                const reader = new FileReader();
+
+                reader.readAsDataURL(file);
+
+                reader.onload = (event) => {
+
+                    const img = new Image();
+
+                    img.src = event.target.result;
+
+                    img.onload = () => {
+
+                        const canvas = document.createElement('canvas');
+
+                        let width = img.width;
+
+                        let height = img.height;
+
+
+
+                        if (width > maxWidth) {
+
+                            height = Math.round((height * maxWidth) / width);
+
+                            width = maxWidth;
+
+                        }
+
+
+
+                        canvas.width = width;
+
+                        canvas.height = height;
+
+
+
+                        const ctx = canvas.getContext('2d');
+
+                        ctx.drawImage(img, 0, 0, width, height);
+
+
+
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+
+                        resolve(compressedBase64);
+
+                    };
+
+                    img.onerror = (err) => reject(err);
+
+                };
+
+                reader.onerror = (err) => reject(err);
+
+            });
+
+        }
+
+
+
+        async function handleImageUpload(event) {
+
+            const files = Array.from(event.target.files);
+
+            if (files.length === 0) return;
+
+
+
+            if (files.length !== 3) {
+
+                alert("Sila muat naik tepat 3 gambar PdPR.");
+
+                return;
+
+            }
+
+
+
+            uploadedBase64Images = [];
+
+            const previewContainer = document.getElementById('image-preview-container');
+
+            previewContainer.innerHTML = '';
+
+            previewContainer.classList.remove('hidden');
+
+
+
+            let processedCount = 0;
+
+
+
+            for (let index = 0; index < files.slice(0, 3).length; index++) {
+
+                const file = files[index];
+
+                try {
+
+                    const base64Str = await compressImage(file);
+
+                    uploadedBase64Images.push({
+
+                        fileName: file.name,
+
+                        mimeType: 'image/jpeg',
+
+                        data: base64Str
+
+                    });
+
+
+
+                    // Render Preview Thumbnail
+
+                    const card = document.createElement('div');
+
+                    card.className = "relative rounded-xl overflow-hidden border border-slate-200 shadow-sm group bg-slate-100 aspect-video";
+
+                    card.innerHTML = `
+
+                        <img src="${base64Str}" class="w-full h-full object-cover">
+
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+
+                            <span class="text-white text-xs font-bold bg-johorBlue px-2 py-1 rounded">Gambar ${index + 1}</span>
+
+                        </div>
+
+                    `;
+
+                    previewContainer.appendChild(card);
+
+
+
+                    processedCount++;
+
+                    document.getElementById('img-count').innerText = `${processedCount} / 3 Gambar`;
+
+                } catch (err) {
+
+                    console.error("Error processing image:", err);
+
+                }
+
+            }
+
+        }
+
+
+
+        function getFormData() {
+
+            const namaGuru = document.getElementById('namaGuru').value.trim();
+
+            const subjek = document.getElementById('subjek').value.trim();
+
+            const kelas = document.getElementById('kelas').value.trim();
+
+            const tarikh = document.getElementById('tarikh').value;
+
+            const tajuk = document.getElementById('tajuk').value.trim();
+
+
+
+            if (!namaGuru || !subjek || !kelas || !tarikh || !tajuk) {
+
+                alert("Sila lengkapkan semua ruangan input yang bertanda *");
+
+                return null;
+
+            }
+
+
+
+            if (uploadedBase64Images.length !== 3) {
+
+                alert("Sila muat naik tepat 3 gambar PdPR.");
+
+                return null;
+
+            }
+
+
+
+            return {
+
+                id: 'OPR-' + Date.now(),
+
+                namaGuru,
+
+                subjek,
+
+                kelas,
+
+                tarikh,
+
+                tajuk,
+
+                images: uploadedBase64Images.map(img => img.data),
+
+                timestamp: new Date().toLocaleString('ms-MY')
+
+            };
+
+        }
+
+
+
+        function renderOprDocument(data) {
+
+            document.getElementById('opr-out-guru').innerText = data.namaGuru || '-';
+
+            document.getElementById('opr-out-guru-sign').innerText = data.namaGuru ? `${data.namaGuru.toUpperCase()}` : '(NAMA GURU)';
+
+            document.getElementById('opr-out-subjek').innerText = data.subjek || '-';
+
+            document.getElementById('opr-out-kelas').innerText = data.kelas || '-';
+
+
+
+            // Format Tarikh to MS
+
+            if (data.tarikh) {
+
+                const dateObj = new Date(data.tarikh);
+
+                document.getElementById('opr-out-tarikh').innerText = isNaN(dateObj) ? data.tarikh : dateObj.toLocaleDateString('ms-MY', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            }
+
+
+
+            document.getElementById('opr-out-tajuk').innerText = data.tajuk || '-';
+
+            document.getElementById('opr-out-timestamp').innerText = `Tarikh Cetakan: ${data.timestamp || new Date().toLocaleString('ms-MY')}`;
+
+
+
+            // Render Images Grid (3 images display)
+
+            const imgContainer = document.getElementById('opr-out-images');
+
+            imgContainer.innerHTML = '';
+
+
+
+            const imagesToDisplay = data.images || [];
+
+
+
+            for (let i = 0; i < 3; i++) {
+
+                const imgCard = document.createElement('div');
+
+                imgCard.className = "h-56 bg-slate-50 border border-slate-300 rounded-lg overflow-hidden flex items-center justify-center relative shadow-sm";
+
+
+
+                if (imagesToDisplay[i]) {
+
+                    imgCard.innerHTML = `
+
+                        <img src="${imagesToDisplay[i]}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/e2e8f0/475569?text=Gambar+PdPR'">
+
+                        <span class="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded">Foto ${i + 1}</span>
+
+                    `;
+
+                } else {
+
+                    imgCard.innerHTML = `<span class="text-slate-400 text-xs italic">Tiada Gambar ${i + 1}</span>`;
+
+                }
+
+                imgContainer.appendChild(imgCard);
+
+            }
+
+        }
+
+
+
+        let pendingSave = null;
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const record = getFormData(); if (!record) return;
+            const fingerprint = JSON.stringify([record.namaGuru,record.subjek,record.kelas,record.tarikh,record.tajuk,record.images]);
+            if (pendingSave && pendingSave.fingerprint === fingerprint) record.id = pendingSave.id;
+            pendingSave = {id:record.id, fingerprint};
+            const btn = document.getElementById('submitBtn'), original = btn.innerHTML;
+            btn.disabled = true; btn.textContent = 'Menyimpan data dan gambar...';
+            renderOprDocument(record);
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, redirect:'follow',
+                    body:JSON.stringify({action:'saveOPR',id:record.id,namaGuru:record.namaGuru,subjek:record.subjek,kelas:record.kelas,tarikh:record.tarikh,tajuk:record.tajuk,images:uploadedBase64Images})
+                });
+                if (!response.ok) throw new Error('HTTP '+response.status);
+                const result = await response.json();
+                if (result.status !== 'success') throw new Error(result.message || 'Simpanan tidak disahkan.');
+                pendingSave = null;
+                const cloudRecord = {...record,...result.record,cloudSaved:true};
+                renderOprDocument(cloudRecord);
+                try { saveToLocalStorage({...cloudRecord,images:[]}); } catch (error) { console.warn('Cache tidak tersedia',error); }
+                alert('Data dan 3 gambar berjaya disimpan ke Google Sheet dan Drive!');
+                await fetchSavedRecords();
+            } catch (error) {
+                alert('Simpanan belum dapat disahkan. '+error.message+'\nBorang dikekalkan. Cuba simpan semula; ID yang sama mengelakkan rekod berganda.');
+                console.error(error);
+            } finally { btn.disabled=false; btn.innerHTML=original; switchTab('preview'); }
+        }
+
+
+        function saveToLocalStorage(record) {
+            let localData = JSON.parse(localStorage.getItem('skst_opr_records') || '[]');
+            localData = localData.filter(r => r.id !== record.id);
+            localData.unshift(record);
+            localStorage.setItem('skst_opr_records', JSON.stringify(localData.map(r=>({...r,images:[]}))));
+            loadLocalRecords();
+        }
+
+
+        function loadLocalRecords() {
+
+            savedRecordsList = JSON.parse(localStorage.getItem('skst_opr_records') || '[]');
+
+            populateFiltersOptions();
+
+            applyFilters();
+
+        }
+
+
+
+        async function fetchSavedRecords() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL+'?action=getRecords&t='+Date.now(), {redirect:'follow'});
+                if (!response.ok) throw new Error('HTTP '+response.status);
+                const records = await response.json();
+                if (!Array.isArray(records)) throw new Error(records.message || 'Respons API tidak sah.');
+                savedRecordsList = records;
+                try { localStorage.setItem('skst_opr_records',JSON.stringify(records)); } catch(error) { console.warn(error); }
+                populateFiltersOptions(); applyFilters();
+                document.getElementById('records-status').textContent = records.length+' rekod daripada Google Sheet.';
+            } catch(error) {
+                document.getElementById('records-status').textContent = 'Gagal memuatkan rekod: '+error.message+'. Semak deployment Apps Script dan klik Muat Semula Data. Rekod cache dipaparkan jika tersedia.';
+                console.error(error);
+            }
+        }
+
+
+        function populateFiltersOptions() {
+
+            const subjekSet = new Set();
+
+            const kelasSet = new Set();
+
+
+
+            savedRecordsList.forEach(r => {
+
+                if (r.subjek) subjekSet.add(r.subjek);
+
+                if (r.kelas) kelasSet.add(r.kelas);
+
+            });
+
+
+
+            const subjekSelect = document.getElementById('filterSubjek');
+
+            const kelasSelect = document.getElementById('filterKelas');
+
+
+
+            subjekSelect.innerHTML = '<option value="">Semua Subjek</option>';
+
+            kelasSelect.innerHTML = '<option value="">Semua Kelas</option>';
+
+
+
+            subjekSet.forEach(s => subjekSelect.add(new Option(s,s)));
+
+            kelasSet.forEach(k => kelasSelect.add(new Option(k,k)));
+
+        }
+
+
+
+        function applyFilters() {
+
+            const fGuru = document.getElementById('filterGuru').value.toLowerCase();
+
+            const fSubjek = document.getElementById('filterSubjek').value.toLowerCase();
+
+            const fKelas = document.getElementById('filterKelas').value.toLowerCase();
+
+            const fSearch = document.getElementById('filterSearch').value.toLowerCase();
+
+
+
+            filteredRecordsList = savedRecordsList.filter(r => {
+
+                const matchGuru = !fGuru || (r.namaGuru && r.namaGuru.toLowerCase().includes(fGuru));
+
+                const matchSubjek = !fSubjek || (r.subjek && r.subjek.toLowerCase().includes(fSubjek));
+
+                const matchKelas = !fKelas || (r.kelas && r.kelas.toLowerCase().includes(fKelas));
+
+                const matchSearch = !fSearch ||
+
+                    (r.tajuk && r.tajuk.toLowerCase().includes(fSearch)) ||
+
+                    (r.tarikh && r.tarikh.toLowerCase().includes(fSearch));
+
+
+
+                return matchGuru && matchSubjek && matchKelas && matchSearch;
+
+            });
+
+
+
+            renderRecordsTable();
+
+        }
+
+
+
+        function escapeHTML(value) { return String(value ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c])); }
+        function renderRecordsTable() {
+
+            const tbody = document.getElementById('records-table-body');
+
+            tbody.innerHTML = '';
+
+
+
+            if (filteredRecordsList.length === 0) {
+
+                tbody.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="7" class="p-8 text-center text-slate-400">
+
+                            Tiada rekod OPR dijumpai.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            filteredRecordsList.forEach((rec, idx) => {
+
+                const tr = document.createElement('tr');
+
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                tr.innerHTML = `
+
+                    <td class="p-3 font-semibold text-slate-500">${idx + 1}</td>
+
+                    <td class="p-3 whitespace-nowrap text-slate-700 font-medium">${escapeHTML(rec.tarikh || '-')}</td>
+
+                    <td class="p-3 font-bold text-johorBlue uppercase">${escapeHTML(rec.namaGuru || '-')}</td>
+
+                    <td class="p-3 text-slate-700">${escapeHTML(rec.subjek || '-')}</td>
+
+                    <td class="p-3 font-semibold text-slate-800">${escapeHTML(rec.kelas || '-')}</td>
+
+                    <td class="p-3 max-w-xs truncate text-slate-600" title="${escapeHTML(rec.tajuk)}">${escapeHTML(rec.tajuk || '-')}</td>
+
+                    <td class="p-3 text-center">
+
+                        <button data-record-id="${escapeHTML(rec.id)}" class="px-3 py-1.5 bg-johorBlue text-white rounded-lg text-xs font-bold hover:bg-blue-900 shadow-sm transition">
+
+                            <i class="fa-solid fa-eye"></i> Papar / Cetak
+
+                        </button>
+
+                    </td>
+
+                `;
+
+                tr.querySelector("button").addEventListener("click", () => viewRecord(rec.id));
+                tbody.appendChild(tr);
+
+            });
+
+        }
+
+
+
+        async function viewRecord(id) {
+            const record = savedRecordsList.find(r=>r.id===id); if(!record)return;
+            if (!record.imageIds) { renderOprDocument(record); switchTab('preview'); return; }
+            const status = document.getElementById('records-status');
+            status.textContent = 'Memuatkan gambar OPR daripada Drive...';
+            try {
+                const response = await fetch(APPS_SCRIPT_URL+'?action=getRecord&id='+encodeURIComponent(id),{redirect:'follow'});
+                if(!response.ok)throw new Error('HTTP '+response.status);
+                const result = await response.json();
+                if(result.status!=='success')throw new Error(result.message || 'Gambar tidak dapat dimuatkan.');
+                renderOprDocument(result.record); switchTab('preview');
+                status.textContent='Rekod dan gambar berjaya dimuatkan.';
+            } catch(error) {status.textContent='Gagal memuatkan OPR: '+error.message; alert(status.textContent);}
+        }
+
+
+        function resetForm() {
+
+            document.getElementById('oprForm').reset();
+
+            uploadedBase64Images = [];
+
+            document.getElementById('image-preview-container').innerHTML = '';
+
+            document.getElementById('image-preview-container').classList.add('hidden');
+
+            document.getElementById('img-count').innerText = "0 / 3 Gambar";
+
+            setTodayDate();
+
+        }
+
+    </script>
+
+<script>
+const SCHOOL_LOGO = "assets/lencana-sekolah.png";
+document.querySelectorAll("[data-school-logo]").forEach(img => img.src = SCHOOL_LOGO);
+document.querySelectorAll("[data-school-icon]").forEach(icon => icon.href = SCHOOL_LOGO);
+const SUBJECTS_CSV_URL = TEACHERS_CSV_URL.replace('gid=0&', 'gid=978586063&');
+const CLASSES_CSV_URL = TEACHERS_CSV_URL.replace('gid=0&', 'gid=1134179243&');
+function parseCSV(text) {
+    const rows = []; let row = [], cell = '', quoted = false;
+    text = text.replace(/^\uFEFF/, '');
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c === '"') {
+            if (quoted && text[i + 1] === '"') { cell += '"'; i++; }
+            else quoted = !quoted;
+        } else if (c === ',' && !quoted) { row.push(cell); cell = ''; }
+        else if ((c === '\n' || c === '\r') && !quoted) {
+            if (c === '\r' && text[i + 1] === '\n') i++;
+            row.push(cell); if (row.some(v => v.trim())) rows.push(row);
+            row = []; cell = '';
+        } else cell += c;
+    }
+    row.push(cell); if (row.some(v => v.trim())) rows.push(row);
+    return rows;
+}
+function csvValues(text, aliases) {
+    if (/^\s*</.test(text)) throw new Error('Pautan tidak mengembalikan CSV.');
+    const rows = parseCSV(text);
+    if (!rows.length) throw new Error('Senarai kosong.');
+    const normalize = v => v.trim().toLowerCase().replace(/[_\s]+/g, ' ');
+    const headers = rows[0].map(normalize);
+    let column = headers.findIndex(v => aliases.includes(v));
+    const hasHeader = column >= 0;
+    if (!hasHeader) column = headers[0] === 'bil' || headers[0] === 'no' || /^\d+$/.test(headers[0]) ? 1 : 0;
+    const values = [...new Set(rows.slice(hasHeader ? 1 : 0).map(r => (r[column] || '').trim()).filter(Boolean))];
+    if (!values.length) throw new Error('Tiada pilihan ditemukan.');
+    return values;
+}
+function fillSelect(id, values, placeholder) {
+    const select = document.getElementById(id), previous = select.value;
+    select.replaceChildren(new Option(placeholder, ''));
+    values.forEach(v => select.add(new Option(v, v)));
+    if (values.includes(previous)) select.value = previous;
+    select.disabled = false;
+}
+let referencesLoading = false;
+async function loadReferenceLists() {
+    if (referencesLoading) return;
+    referencesLoading = true;
+    const status = document.getElementById('teacher-status');
+    status.textContent = 'Memuatkan senarai guru, subjek dan kelas...';
+    const lists = [
+        {id:'namaGuru', label:'Nama Guru', url:TEACHERS_CSV_URL, aliases:['nama guru','nama','guru','nama penuh','nama penuh guru']},
+        {id:'subjek', label:'Subjek', url:SUBJECTS_CSV_URL, aliases:['subjek','mata pelajaran','matapelajaran','nama subjek','nama mata pelajaran']},
+        {id:'kelas', label:'Kelas', url:CLASSES_CSV_URL, aliases:['kelas','nama kelas','senarai kelas']}
+    ];
+    const results = await Promise.allSettled(lists.map(async config => {
+        const select = document.getElementById(config.id); select.disabled = true;
+        try {
+            const response = await fetch(config.url, {cache:'no-store', signal:AbortSignal.timeout(25000)});
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const values = csvValues(await response.text(), config.aliases);
+            fillSelect(config.id, values, '-- Pilih '+config.label+' --');
+            if (config.id === 'namaGuru') {
+                teacherList = values;
+                fillSelect('filterGuru', values, 'Semua Guru');
+            }
+            return config.label + ': ' + values.length;
+        } catch (error) {
+            select.replaceChildren(new Option('Gagal memuatkan '+config.label+' — muat semula', ''));
+            throw new Error(config.label);
+        }
+    }));
+    const failures = results.filter(r => r.status === 'rejected').map(r => r.reason.message);
+    status.textContent = failures.length ? 'Gagal memuatkan: '+failures.join(', ')+'. Klik muat semula.' : results.map(r => r.value).join(' • ');
+    referencesLoading = false;
+}
+function setTodayDate() {
+    const today = new Date();
+    document.getElementById('tarikh').value = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+}
+function switchTab(tab) {
+    ['form','preview','records'].forEach(name => {
+        document.getElementById('section-'+name).classList.toggle('hidden', name !== tab);
+        const button = document.getElementById('tab-'+name+'-btn');
+        button.classList.toggle('bg-white', name === tab);
+        button.classList.toggle('text-johorBlue', name === tab);
+        button.classList.toggle('text-white', name !== tab);
+    });
+}
+function generatePreviewOnly() {
+    const record = getFormData();
+    if (record) { renderOprDocument(record); switchTab('preview'); }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    setTodayDate(); loadReferenceLists();
+    try { loadLocalRecords(); } catch (error) { console.warn(error); }
+    fetchSavedRecords();
+});
+</script>
+</body>
+
+</html>
