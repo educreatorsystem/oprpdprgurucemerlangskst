@@ -5,13 +5,22 @@
 - Rekod dipaparkan sebagai kad. Klik kad untuk membuka laporan penuh bersama gambar.
 - Tiga gambar bersebelahan, tanpa ruang tandatangan.
 - Font Manrope dan Outfit, animasi hover serta sokongan pilihan reduced motion.
-- Untuk kemaskini daripada versi sebelumnya, gantikan index.html dan assets/lencana-sekolah.png di GitHub. Apps Script tidak berubah. Refresh halaman selepas GitHub Pages selesai deploy.
+- Untuk kemaskini versi admin, gantikan index.html di GitHub, gantikan Code.gs dalam Apps Script, Run setupAdmin dan deploy New version. Refresh halaman selepas GitHub Pages selesai deploy.
 
 ## Kandungan
 - `index.html`: sistem untuk GitHub Pages.
 - `assets/lencana-sekolah.png`: lencana asal sekolah.
 - `Code.gs`: kod backend Google Apps Script.
 - `appsscript.json`: manifest Apps Script.
+
+## Fungsi Admin dan Arkib OPR
+- Tab Rekod Disimpan dinamakan Arkib OPR.
+- Klik Log Masuk Admin dalam Arkib OPR. Akaun `gurucemerlang` menggunakan kata laluan yang cikgu tetapkan dalam permintaan.
+- Jalankan `setupAdmin` sekali selepas menyalin Code.gs baharu. Kata laluan lalai disimpan sebagai salted SHA-256; kata laluan sebenar tidak terkandung dalam index.html atau README.
+- Sesi admin sah selama 1 jam (cache Google boleh tamat lebih awal). Refresh halaman memerlukan log masuk semula. Log keluar membatalkan token.
+- Butang Padam OPR hanya muncul selepas log masuk. Pengesahan token turut dibuat oleh backend setiap kali pemadaman diminta.
+- Pemadaman memerlukan pengesahan pengguna. Baris laporan dibuang daripada DATA_OPR dan tiga gambar dipindahkan ke Tong Sampah Drive. Subfolder kosong dikekalkan. Jika pemadaman baris gagal, gambar yang dipindahkan ke Tong Sampah dipulihkan.
+- Untuk menukar kata laluan, pergi Project Settings → Script Properties. Tambah ADMIN_PASSWORD dengan kata laluan baharu, kemudian Run setupAdmin. Nilai plaintext ini dibuang selepas hash disimpan; sesi lama dibatalkan. ADMIN_USERNAME boleh ditukar di tempat sama.
 
 ## 1. Pasang Apps Script
 1. Buka Google Sheet `1-dzawk8p3kWGp4BTMaChL9p_G-4zMxGE_V3kuyDJM7A` menggunakan akaun yang mempunyai akses edit ke Sheet dan folder Drive `15LwCH3QNNoSDBr7Q8nTNKllErGflVmh3`.
@@ -42,10 +51,11 @@
 - Kolum DATA_OPR: ID, TIMESTAMP, NAMA GURU, SUBJEK, KELAS, TARIKH, TAJUK, GAMBAR 1 ID, GAMBAR 2 ID, GAMBAR 3 ID, FOLDER URL.
 - `saveOPR` (POST JSON melalui Content-Type text/plain): menyimpan data dan 3 gambar JPEG/PNG/WebP, maksimum 5 MB setiap gambar.
 - `getRecords` (GET): senarai metadata tanpa memuatkan semua gambar.
+- `adminLogin`, `adminLogout`, `deleteOPR` (POST): log masuk, keluar dan padam dengan token sesi admin.
 - `getRecord&id=...` (GET): satu rekod lengkap bersama gambar base64 dari Drive.
 - ID yang sama tidak mencipta rekod berganda. Jika simpanan gagal sebelum baris ditulis, gambar yang baru dicipta dibersihkan.
 - Sistem tidak menukar tetapan perkongsian gambar Drive. Gambar dibaca oleh Apps Script menggunakan akaun pemilik deployment.
-- Tetapan Web App **Anyone** membolehkan sesiapa yang mengetahui URL API menyimpan dan membaca rekod termasuk gambar melalui API. Versi ini tiada kawalan log masuk; gunakan hanya bagi rekod yang sesuai untuk akses tersebut.
+- Tetapan Web App **Anyone** membolehkan sesiapa yang mengetahui URL API menyimpan dan membaca rekod termasuk gambar melalui API. Pembacaan dan simpanan masih boleh digunakan tanpa log masuk. Pemadaman memerlukan sesi admin yang disahkan oleh Apps Script.
 
 ## Jika gagal
 - **Authorization / permission**: jalankan setup menggunakan akaun pemilik deployment dan pastikan akaun itu boleh edit Sheet serta folder Drive.

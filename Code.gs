@@ -21,6 +21,7 @@ function sheet_() {
   return sheet;
 }
 function setup() {
+  setupAdmin();
   const sheet = sheet_();
   const folder = DriveApp.getFolderById(CONFIG.folderId);
   console.log('Sedia: ' + sheet.getName() + ' / ' + folder.getName());
@@ -72,6 +73,9 @@ function doPost(e) {
   let acquired = false, folder = null, committed = false;
   try {
     const payload = JSON.parse(e && e.postData ? e.postData.contents : '{}');
+    if (payload.action === 'adminLogin') return json_(adminLogin_(payload));
+    if (payload.action === 'adminLogout') { adminLogout_(payload.token); return json_({status:'success'}); }
+    if (payload.action === 'deleteOPR') return json_(deleteOPR_(payload));
     if (payload.action !== 'saveOPR') throw new Error('Action tidak sah.');
     const id = payload.id ? text_(payload.id, 'ID', 100) : 'OPR-' + Utilities.getUuid();
     if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new Error('ID tidak sah.');
@@ -102,4 +106,78 @@ function doPost(e) {
     console.error(error);
     return json_({status: 'error', message: String(error.message || error)});
   } finally { if (acquired) lock.releaseLock(); }
+}
+
+// Run setupAdmin memasang akaun admin yang telah ditetapkan. Untuk menukar kata laluan, tetapkan ADMIN_PASSWORD dalam Script Properties dan Run setupAdmin sekali lagi.
+// Kata laluan tidak disimpan dalam fail GitHub atau HTML.
+function hash_(value) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(value), Utilities.Charset.UTF_8)
+    .map(b => ('0' + ((b + 256) % 256).toString(16)).slice(-2)).join('');
+}
+function setupAdmin() {
+  const props = PropertiesService.getScriptProperties();
+  const password = props.getProperty('ADMIN_PASSWORD');
+  if (password) {
+    const salt = Utilities.getUuid();
+    props.setProperty('ADMIN_PASSWORD_SALT', salt);
+    props.setProperty('ADMIN_PASSWORD_HASH', hash_(salt + ':' + password));
+    props.deleteProperty('ADMIN_PASSWORD');
+    props.setProperty('ADMIN_SESSION_VERSION', Utilities.getUuid());
+  }
+  if (!props.getProperty('ADMIN_USERNAME')) props.setProperty('ADMIN_USERNAME','gurucemerlang');
+  if (!props.getProperty('ADMIN_PASSWORD_HASH')) {
+    props.setProperty('ADMIN_PASSWORD_SALT', 'e4d028e7d32da3c8db0821ef7aa49c67a7c7197882bd952f');
+    props.setProperty('ADMIN_PASSWORD_HASH', '2ff99802f27866b0fb5f6417ece51c6a043192e4d4e245b4b5c4f7435c3e30a8');
+    props.setProperty('ADMIN_SESSION_VERSION', Utilities.getUuid());
+  }
+}
+function adminLogin_(payload) {
+  const props = PropertiesService.getScriptProperties();
+  const username = String(payload.username || '').trim();
+  const password = String(payload.password || '');
+  if (username.length > 200 || password.length > 200) throw new Error('Maklumat log masuk tidak sah.');
+  const expected = props.getProperty('ADMIN_PASSWORD_HASH');
+  const salt = props.getProperty('ADMIN_PASSWORD_SALT');
+  if (!expected || !salt) throw new Error('Admin belum dikonfigurasi. Jalankan setupAdmin.');
+  if (username !== props.getProperty('ADMIN_USERNAME') || hash_(salt + ':' + password) !== expected) throw new Error('Nama pengguna atau kata laluan salah.');
+  const token = Utilities.getUuid() + Utilities.getUuid();
+  const expiresAt = Date.now() + 60 * 60 * 1000;
+  CacheService.getScriptCache().put('admin:' + hash_(token), JSON.stringify({expiresAt:expiresAt,version:props.getProperty('ADMIN_SESSION_VERSION')}),3600);
+  return {status:'success',token:token,expiresAt:expiresAt,username:username};
+}
+function requireAdmin_(token) {
+  if (typeof token !== 'string' || token.length > 200 || !token) throw new Error('ADMIN_REQUIRED: Sila log masuk admin.');
+  const cached = CacheService.getScriptCache().get('admin:' + hash_(token));
+  if (!cached) throw new Error('ADMIN_REQUIRED: Sesi admin telah tamat. Log masuk semula.');
+  const session = JSON.parse(cached);
+  if (session.expiresAt <= Date.now() || session.version !== PropertiesService.getScriptProperties().getProperty('ADMIN_SESSION_VERSION')) throw new Error('ADMIN_REQUIRED: Sesi admin telah tamat.');
+}
+function adminLogout_(token) {
+  if (typeof token === 'string' && token.length <= 200) CacheService.getScriptCache().remove('admin:' + hash_(token));
+}
+function deleteOPR_(payload) {
+  requireAdmin_(payload.token);
+  const id = text_(payload.id,'ID',100);
+  const lock = LockService.getScriptLock();
+  const changedFiles = []; let acquired = false, committed = false;
+  try {
+    lock.waitLock(30000); acquired = true;
+    requireAdmin_(payload.token);
+    const sheet = sheet_();
+    const rows = sheet.getLastRow() < 2 ? [] : sheet.getRange(2,1,sheet.getLastRow()-1,HEADERS.length).getDisplayValues();
+    const index = rows.findIndex(row=>row[0]===id);
+    if (index < 0) return {status:'success',id:id,alreadyDeleted:true};
+    const record = record_(rows[index]);
+    // Hanya ID gambar yang memang tersimpan dalam baris laporan ini boleh dipadam.
+    record.imageIds.filter(Boolean).forEach(fileId => {
+      const file = DriveApp.getFileById(fileId);
+      if (!file.isTrashed()) { file.setTrashed(true); changedFiles.push(file); }
+    });
+    sheet.deleteRow(index+2); committed = true;
+    SpreadsheetApp.flush();
+    return {status:'success',id:id,message:'Laporan OPR dipadam. Gambar dipindahkan ke Tong Sampah Drive.'};
+  } catch(error) {
+    if (!committed) changedFiles.forEach(file=>{try {file.setTrashed(false);} catch(restoreError){console.error(restoreError);}});
+    throw error;
+  } finally { if(acquired) lock.releaseLock(); }
 }

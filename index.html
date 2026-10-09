@@ -192,6 +192,8 @@
         .photo-caption { position:absolute;bottom:6px;right:6px;padding:3px 7px;border-radius:5px;background:#001f54d9;color:white;font-size:9px; }
         @media(max-width:768px) { .opr-photo {height:170px;} .opr-photo-row {gap:6px;} }
         @media print { .opr-photo-row {grid-template-columns:repeat(3,minmax(0,1fr))!important;} .opr-photo {height:65mm;} button {transform:none!important;} }
+        dialog::backdrop {background:#0a1128a8;backdrop-filter:blur(3px);}
+        .record-card {cursor:pointer;}
         @media(prefers-reduced-motion:reduce) { *,*:before,*:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;} }
 
     </style>
@@ -246,7 +248,7 @@
 
                 <button id="tab-records-btn" onclick="switchTab('records')" class="px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-white hover:bg-white/10">
 
-                    <i class="fa-solid fa-folder-open"></i> Rekod Disimpan
+                    <i class="fa-solid fa-folder-open"></i> Arkib OPR
 
                 </button>
 
@@ -637,7 +639,7 @@
 
                             <span class="w-2 h-6 bg-johorBlue rounded-full inline-block"></span>
 
-                            Senarai Rekod OPR Tersimpan
+                            Arkib OPR
 
                         </h2>
 
@@ -656,7 +658,12 @@
 
 
                 <p id="records-status" role="status" class="text-xs text-slate-600 mb-4">Memuatkan rekod daripada Google Sheet...</p>
-<!-- Filters Bar -->
+<div class="mb-5 flex flex-wrap gap-3 items-center">
+                    <button id="admin-login-btn" type="button" onclick="document.getElementById('admin-dialog').showModal()" class="px-4 py-2 rounded-xl bg-johorBlue text-white text-xs font-bold"><i class="fa-solid fa-user-shield mr-1"></i> Log Masuk Admin</button>
+                    <button id="admin-logout-btn" type="button" onclick="logoutAdmin()" class="hidden px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold">Log Keluar Admin</button>
+                    <span id="admin-status" role="status" class="text-xs text-slate-500">Hanya admin boleh memadam laporan.</span>
+                </div>
+                <!-- Filters Bar -->
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
 
@@ -718,6 +725,15 @@
 
 
     </main>
+    <dialog id="admin-dialog" class="rounded-2xl p-0 w-full max-w-sm shadow-xl border border-slate-200">
+        <form id="admin-form" onsubmit="loginAdmin(event)" class="p-6 space-y-4">
+            <div class="flex justify-between items-center"><h2 class="text-xl font-bold text-johorBlue">Log Masuk Admin</h2><button type="button" onclick="document.getElementById('admin-dialog').close()" aria-label="Tutup" class="text-slate-500 px-2 py-1">✕</button></div>
+            <label class="block text-sm font-semibold">Nama pengguna<input id="admin-username" autocomplete="username" required class="mt-2 w-full border border-slate-300 p-3 rounded-xl"></label>
+            <label class="block text-sm font-semibold">Kata laluan<input id="admin-password" type="password" autocomplete="current-password" required class="mt-2 w-full border border-slate-300 p-3 rounded-xl"></label>
+            <p id="admin-error" role="alert" class="text-xs text-red-600"></p>
+            <button id="admin-submit" type="submit" class="w-full rounded-xl p-3 bg-johorBlue text-white font-bold">Log Masuk</button>
+        </form>
+    </dialog>
 
 
 
@@ -1187,21 +1203,31 @@
                 container.appendChild(empty); return;
             }
             filteredRecordsList.forEach((rec,idx) => {
-                const card = document.createElement('button');
-                card.type = 'button'; card.className = 'record-card';
+                const card = document.createElement('article');
+                card.className = 'record-card';
                 card.setAttribute('aria-label','Papar OPR: '+(rec.tajuk || '-')+' oleh '+(rec.namaGuru || '-'));
                 card.innerHTML = `
                     <div class="flex items-center justify-between"><span class="card-date"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(rec.tarikh || '-')}</span><span class="card-date">OPR ${idx+1}</span></div>
                     <h3 class="card-title">${escapeHTML(rec.tajuk || '-')}</h3>
                     <p class="card-teacher"><i class="fa-solid fa-user mr-1"></i> ${escapeHTML(rec.namaGuru || '-')}</p>
                     <div class="card-badges"><span class="card-badge">${escapeHTML(rec.subjek || '-')}</span><span class="card-badge class">${escapeHTML(rec.kelas || '-')}</span></div>
-                    <div class="card-open"><span>Papar laporan penuh</span><i class="fa-solid fa-arrow-right"></i></div>`;
-                card.addEventListener('click',async () => {
-                    card.disabled=true;card.setAttribute('aria-busy','true');
+                    <button type="button" class="card-open text-left w-full"><span>Papar laporan penuh</span><i class="fa-solid fa-arrow-right"></i></button>`;
+                const openButton = card.querySelector('.card-open');
+                openButton.addEventListener('click',async () => {
+                    openButton.disabled=true;card.setAttribute('aria-busy','true');
                     card.querySelector('.card-open span').textContent='Memuatkan laporan...';
                     try { await viewRecord(rec.id); }
-                    finally { card.disabled=false;card.removeAttribute('aria-busy');card.querySelector('.card-open span').textContent='Papar laporan penuh'; }
+                    finally { openButton.disabled=false;card.removeAttribute('aria-busy');card.querySelector('.card-open span').textContent='Papar laporan penuh'; }
                 });
+                if (adminSession && adminSession.expiresAt > Date.now()) {
+                    const removeButton = document.createElement('button');
+                    removeButton.type='button';removeButton.className='text-xs font-bold text-red-600 border border-red-200 rounded-xl p-2 hover:bg-red-50';
+                    removeButton.textContent='Padam OPR';
+                    removeButton.addEventListener('click',()=>deleteReport(rec,removeButton));
+                    card.appendChild(removeButton);
+                }
+                // Klik permukaan kad membuka laporan; butang padam tidak membuka laporan.
+                card.addEventListener('click',event=>{if(!event.target.closest('button'))openButton.click();});
                 container.appendChild(card);
             });
         }
@@ -1338,6 +1364,58 @@ document.addEventListener('DOMContentLoaded', () => {
     try { loadLocalRecords(); } catch (error) { console.warn(error); }
     fetchSavedRecords();
 });
+</script>
+<script>
+let adminSession = null;
+let adminTimer = null;
+async function apiPost(payload) {
+    const response = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const result=await response.json();
+    if(result.status!=='success')throw new Error(result.message || 'Permintaan gagal.');
+    return result;
+}
+function clearAdmin() {
+    adminSession=null;clearTimeout(adminTimer);updateAdminUI();
+}
+function updateAdminUI() {
+    const active = !!adminSession && adminSession.expiresAt > Date.now();
+    document.getElementById('admin-login-btn').classList.toggle('hidden',active);
+    document.getElementById('admin-logout-btn').classList.toggle('hidden',!active);
+    document.getElementById('admin-status').textContent=active?'Admin aktif: '+adminSession.username+' • Sesi 1 jam':'Hanya admin boleh memadam laporan.';
+    renderRecordsTable();
+}
+async function loginAdmin(event) {
+    event.preventDefault();const button=document.getElementById('admin-submit');
+    const error=document.getElementById('admin-error');error.textContent='';button.disabled=true;button.textContent='Mengesahkan...';
+    try {
+        const result=await apiPost({action:'adminLogin',username:document.getElementById('admin-username').value.trim(),password:document.getElementById('admin-password').value});
+        adminSession={token:result.token,expiresAt:result.expiresAt,username:result.username};
+        clearTimeout(adminTimer);adminTimer=setTimeout(clearAdmin,Math.max(0,result.expiresAt-Date.now()));
+        document.getElementById('admin-dialog').close();updateAdminUI();
+    } catch(err) {error.textContent=err.message;}
+    finally {document.getElementById('admin-password').value='';button.disabled=false;button.textContent='Log Masuk';}
+}
+async function logoutAdmin() {
+    const token=adminSession?.token;clearAdmin();
+    if(token)try{await apiPost({action:'adminLogout',token});}catch(err){console.warn(err);}
+}
+async function deleteReport(record,button) {
+    if(!adminSession || adminSession.expiresAt<=Date.now()){clearAdmin();return;}
+    if(!confirm('Padam laporan OPR "'+record.tajuk+'" oleh '+record.namaGuru+'?\nRekod dipadam daripada Sheet dan 3 gambar dipindahkan ke Tong Sampah Drive.'))return;
+    button.disabled=true;button.textContent='Memadam...';
+    try {
+        const result=await apiPost({action:'deleteOPR',id:record.id,token:adminSession.token});
+        savedRecordsList=savedRecordsList.filter(r=>r.id!==record.id);
+        try{localStorage.setItem('skst_opr_records',JSON.stringify(savedRecordsList));}catch(err){console.warn(err);}
+        populateFiltersOptions();applyFilters();
+        document.getElementById('records-status').textContent=result.message || 'Laporan dipadam.';
+        await fetchSavedRecords();
+    } catch(err) {
+        if(err.message.includes('ADMIN_REQUIRED'))clearAdmin();
+        alert('Laporan belum dapat dipadam: '+err.message);button.disabled=false;button.textContent='Padam OPR';
+    }
+}
 </script>
 </body>
 
