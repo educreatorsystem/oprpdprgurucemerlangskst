@@ -64,7 +64,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 
 
@@ -72,7 +72,7 @@
 
         body {
 
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Manrope', sans-serif;
 
             background-color: #f1f5f9;
 
@@ -167,6 +167,32 @@
             }
 
         }
+
+    
+        h1,h2,h3,nav,button { font-family:'Outfit','Manrope',sans-serif; }
+        body { background: radial-gradient(circle at 5% 5%,#dbeafe 0,transparent 30%),radial-gradient(circle at 95% 30%,#ffe4e6 0,transparent 26%),#f4f7fc; }
+        button { transition: transform .22s ease,box-shadow .22s ease,background .22s ease; }
+        button:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 22px #001f5420; }
+        button:active:not(:disabled) { transform:translateY(0); }
+        button:focus-visible { outline:3px solid #ffb703; outline-offset:4px; }
+        #records-cards { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:20px; }
+        .record-card { position:relative;text-align:left;width:100%;display:flex;flex-direction:column;gap:16px;padding:24px;border:1px solid #e2e8f0;border-radius:22px;background:linear-gradient(150deg,#fff,#f8faff);color:#0f172a;overflow:hidden;box-shadow:0 4px 16px #001f5408; }
+        .record-card:before { content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#001f54,#d90429); }
+        .record-card:hover:not(:disabled) { transform:translateY(-6px);border-color:#93b4dc;box-shadow:0 18px 36px #001f541a; }
+        .record-card .card-title { font-size:18px;font-weight:700;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden; }
+        .record-card .card-teacher { font-size:12px;font-weight:700;color:#001f54; }
+        .card-date { font-size:11px;color:#64748b;font-weight:600; }
+        .card-badges { display:flex;flex-wrap:wrap;gap:8px; }
+        .card-badge { font-size:11px;padding:5px 10px;border-radius:9px;background:#eaf1fb;color:#001f54;font-weight:600; }
+        .card-badge.class { background:#fff0f2;color:#c41c3c; }
+        .card-open { margin-top:auto;padding-top:14px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#001f54; }
+        .opr-photo-row { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px; }
+        .opr-photo { height:240px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center; }
+        .opr-photo img { width:100%;height:100%;object-fit:contain; }
+        .photo-caption { position:absolute;bottom:6px;right:6px;padding:3px 7px;border-radius:5px;background:#001f54d9;color:white;font-size:9px; }
+        @media(max-width:768px) { .opr-photo {height:170px;} .opr-photo-row {gap:6px;} }
+        @media print { .opr-photo-row {grid-template-columns:repeat(3,minmax(0,1fr))!important;} .opr-photo {height:65mm;} button {transform:none!important;} }
+        @media(prefers-reduced-motion:reduce) { *,*:before,*:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;} }
 
     </style>
 
@@ -577,84 +603,22 @@
 
 
 
-                        <!-- 2x2 Photo Layout Container -->
-
-                        <div class="mb-4">
-
-                            <h3 class="text-xs font-extrabold text-johorBlue uppercase tracking-wider mb-2 flex items-center gap-1.5">
-
-                                <i class="fa-solid fa-camera text-johorRed"></i> RAKAMAN GAMBAR AKTIVITI / TUGASAN MURID
-
-                            </h3>
-
-                            <div id="opr-out-images" class="grid grid-cols-2 gap-3">
-
-                                <!-- Placeholders for 4 images -->
-
-                        <!-- 3 Photo Layout Container -->
-
+                        <!-- Three photos in one row -->
                         <div class="mb-6">
-
-                            <h3 class="text-xs font-extrabold text-johorBlue uppercase tracking-wider mb-3 flex items-center gap-1.5">
-
-                                <i class="fa-solid fa-camera text-johorRed"></i> RAKAMAN GAMBAR AKTIVITI / TUGASAN MURID
-
-                            </h3>
-
-                            <div id="opr-out-images" class="grid grid-cols-3 gap-3">
-
-                                <!-- Placeholders for 3 images -->
-
-                                <div class="h-56 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-xs font-medium">Gambar 1</div>
-
-                                <div class="h-56 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-xs font-medium">Gambar 2</div>
-
-                                <div class="h-56 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-xs font-medium">Gambar 3</div>
-
+                            <h3 class="text-xs font-extrabold text-johorBlue uppercase tracking-wider mb-3"><i class="fa-solid fa-camera text-johorRed"></i> RAKAMAN GAMBAR AKTIVITI / TUGASAN MURID</h3>
+                            <div id="opr-out-images" class="opr-photo-row">
+                                <div class="opr-photo">Gambar 1</div>
+                                <div class="opr-photo">Gambar 2</div>
+                                <div class="opr-photo">Gambar 3</div>
                             </div>
-
                         </div>
-
                     </div>
-
-
-
-                    <!-- Signatures & Verification Footer -->
-
-                    <div class="pt-4 border-t border-slate-300 text-xs mt-auto">
-
-                        <div class="flex justify-between items-end">
-
-                            <div>
-
-                                <p class="text-[10px] text-slate-500 mb-8">Disediakan Oleh:</p>
-
-                                <div class="border-b border-slate-400 w-64 mb-1"></div>
-
-                                <p id="opr-out-guru-sign" class="font-bold text-slate-800 uppercase text-[11px]">(NAMA GURU)</p>
-
-                                <p class="text-[10px] text-slate-500">Guru Subjek, SK Sungai Tiram</p>
-
-                            </div>
-
-                            <div class="text-right text-[10px] text-slate-400">
-
-                                <p>Jana Automatik Melalui Sistem OPR SKST</p>
-
-                                <p id="opr-out-timestamp">Tarikh Cetakan: -</p>
-
-                            </div>
-
-                        </div>
-
+                    <div class="pt-3 border-t border-slate-200 text-right text-[10px] text-slate-400 mt-auto">
+                        <p>Jana Automatik Melalui Sistem OPR SKST</p>
+                        <p id="opr-out-timestamp">Tarikh Cetakan: -</p>
                     </div>
-
-
-
                 </div>
-
             </div>
-
         </section>
 
 
@@ -744,56 +708,11 @@
 
 
 
-                <!-- Records Table -->
-
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
-
-                    <table class="w-full text-left text-xs">
-
-                        <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider border-b border-slate-200">
-
-                            <tr>
-
-                                <th class="p-3">#</th>
-
-                                <th class="p-3">Tarikh</th>
-
-                                <th class="p-3">Nama Guru</th>
-
-                                <th class="p-3">Subjek</th>
-
-                                <th class="p-3">Kelas</th>
-
-                                <th class="p-3">Tajuk / Aktiviti</th>
-
-                                <th class="p-3 text-center">Tindakan</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="records-table-body" class="divide-y divide-slate-100 bg-white">
-
-                            <tr>
-
-                                <td colspan="7" class="p-8 text-center text-slate-400">
-
-                                    <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
-
-                                    <p>Memuatkan rekod OPR...</p>
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
+                <!-- Clickable saved report cards -->
+                <div id="records-cards" aria-label="Senarai kad OPR">
+                    <p class="text-sm text-slate-400">Memuatkan rekod OPR...</p>
                 </div>
-
             </div>
-
         </section>
 
 
@@ -1042,8 +961,6 @@
 
             document.getElementById('opr-out-guru').innerText = data.namaGuru || '-';
 
-            document.getElementById('opr-out-guru-sign').innerText = data.namaGuru ? `${data.namaGuru.toUpperCase()}` : '(NAMA GURU)';
-
             document.getElementById('opr-out-subjek').innerText = data.subjek || '-';
 
             document.getElementById('opr-out-kelas').innerText = data.kelas || '-';
@@ -1084,7 +1001,7 @@
 
                 const imgCard = document.createElement('div');
 
-                imgCard.className = "h-56 bg-slate-50 border border-slate-300 rounded-lg overflow-hidden flex items-center justify-center relative shadow-sm";
+                imgCard.className = "opr-photo";
 
 
 
@@ -1092,9 +1009,9 @@
 
                     imgCard.innerHTML = `
 
-                        <img src="${imagesToDisplay[i]}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/e2e8f0/475569?text=Gambar+PdPR'">
+                        <img src="${imagesToDisplay[i]}" alt="Gambar aktiviti ${i + 1}" onerror="this.src='https://placehold.co/600x400/e2e8f0/475569?text=Gambar+PdPR'">
 
-                        <span class="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded">Foto ${i + 1}</span>
+                        <span class="photo-caption">Foto ${i + 1}</span>
 
                     `;
 
@@ -1261,75 +1178,33 @@
 
         function escapeHTML(value) { return String(value ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c])); }
         function renderRecordsTable() {
-
-            const tbody = document.getElementById('records-table-body');
-
-            tbody.innerHTML = '';
-
-
-
-            if (filteredRecordsList.length === 0) {
-
-                tbody.innerHTML = `
-
-                    <tr>
-
-                        <td colspan="7" class="p-8 text-center text-slate-400">
-
-                            Tiada rekod OPR dijumpai.
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-                return;
-
+            const container = document.getElementById('records-cards');
+            container.replaceChildren();
+            if (!filteredRecordsList.length) {
+                const empty = document.createElement('p');
+                empty.className = 'text-sm text-slate-500 p-8 text-center';
+                empty.textContent = 'Tiada rekod OPR dijumpai.';
+                container.appendChild(empty); return;
             }
-
-
-
-            filteredRecordsList.forEach((rec, idx) => {
-
-                const tr = document.createElement('tr');
-
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-
-                tr.innerHTML = `
-
-                    <td class="p-3 font-semibold text-slate-500">${idx + 1}</td>
-
-                    <td class="p-3 whitespace-nowrap text-slate-700 font-medium">${escapeHTML(rec.tarikh || '-')}</td>
-
-                    <td class="p-3 font-bold text-johorBlue uppercase">${escapeHTML(rec.namaGuru || '-')}</td>
-
-                    <td class="p-3 text-slate-700">${escapeHTML(rec.subjek || '-')}</td>
-
-                    <td class="p-3 font-semibold text-slate-800">${escapeHTML(rec.kelas || '-')}</td>
-
-                    <td class="p-3 max-w-xs truncate text-slate-600" title="${escapeHTML(rec.tajuk)}">${escapeHTML(rec.tajuk || '-')}</td>
-
-                    <td class="p-3 text-center">
-
-                        <button data-record-id="${escapeHTML(rec.id)}" class="px-3 py-1.5 bg-johorBlue text-white rounded-lg text-xs font-bold hover:bg-blue-900 shadow-sm transition">
-
-                            <i class="fa-solid fa-eye"></i> Papar / Cetak
-
-                        </button>
-
-                    </td>
-
-                `;
-
-                tr.querySelector("button").addEventListener("click", () => viewRecord(rec.id));
-                tbody.appendChild(tr);
-
+            filteredRecordsList.forEach((rec,idx) => {
+                const card = document.createElement('button');
+                card.type = 'button'; card.className = 'record-card';
+                card.setAttribute('aria-label','Papar OPR: '+(rec.tajuk || '-')+' oleh '+(rec.namaGuru || '-'));
+                card.innerHTML = `
+                    <div class="flex items-center justify-between"><span class="card-date"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(rec.tarikh || '-')}</span><span class="card-date">OPR ${idx+1}</span></div>
+                    <h3 class="card-title">${escapeHTML(rec.tajuk || '-')}</h3>
+                    <p class="card-teacher"><i class="fa-solid fa-user mr-1"></i> ${escapeHTML(rec.namaGuru || '-')}</p>
+                    <div class="card-badges"><span class="card-badge">${escapeHTML(rec.subjek || '-')}</span><span class="card-badge class">${escapeHTML(rec.kelas || '-')}</span></div>
+                    <div class="card-open"><span>Papar laporan penuh</span><i class="fa-solid fa-arrow-right"></i></div>`;
+                card.addEventListener('click',async () => {
+                    card.disabled=true;card.setAttribute('aria-busy','true');
+                    card.querySelector('.card-open span').textContent='Memuatkan laporan...';
+                    try { await viewRecord(rec.id); }
+                    finally { card.disabled=false;card.removeAttribute('aria-busy');card.querySelector('.card-open span').textContent='Papar laporan penuh'; }
+                });
+                container.appendChild(card);
             });
-
         }
-
-
 
         async function viewRecord(id) {
             const record = savedRecordsList.find(r=>r.id===id); if(!record)return;
@@ -1366,8 +1241,8 @@
     </script>
 
 <script>
-const SCHOOL_LOGO = "assets/lencana-sekolah.png";
-document.querySelectorAll("[data-school-logo]").forEach(img => img.src = SCHOOL_LOGO);
+const SCHOOL_LOGO = "https://iili.io/nGTnxcu.png";
+document.querySelectorAll("[data-school-logo]").forEach(img => { img.src = SCHOOL_LOGO; img.onerror = () => { img.onerror = null; img.src = "assets/lencana-sekolah.png"; }; });
 document.querySelectorAll("[data-school-icon]").forEach(icon => icon.href = SCHOOL_LOGO);
 const SUBJECTS_CSV_URL = TEACHERS_CSV_URL.replace('gid=0&', 'gid=978586063&');
 const CLASSES_CSV_URL = TEACHERS_CSV_URL.replace('gid=0&', 'gid=1134179243&');

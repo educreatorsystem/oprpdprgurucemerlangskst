@@ -1,5 +1,12 @@
 # Sistem OPR PdPR / PdPC — SK Sungai Tiram
 
+## Kemaskini paparan
+- Lencana utama menggunakan https://iili.io/nGTnxcu.png daripada pautan cikgu; salinan PNG dalam assets sebagai sandaran.
+- Rekod dipaparkan sebagai kad. Klik kad untuk membuka laporan penuh bersama gambar.
+- Tiga gambar bersebelahan, tanpa ruang tandatangan.
+- Font Manrope dan Outfit, animasi hover serta sokongan pilihan reduced motion.
+- Untuk kemaskini daripada versi sebelumnya, gantikan index.html dan assets/lencana-sekolah.png di GitHub. Apps Script tidak berubah. Refresh halaman selepas GitHub Pages selesai deploy.
+
 ## Kandungan
 - `index.html`: sistem untuk GitHub Pages.
 - `assets/lencana-sekolah.png`: lencana asal sekolah.
