@@ -208,6 +208,11 @@
             #opr-template .opr-photo {height:65mm!important;}
             dialog {display:none!important;}
         }
+
+.teacher-autocomplete {position:relative;min-width:0;}
+.teacher-suggestions {position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:60;max-height:260px;overflow:auto;background:white;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 14px 30px #001f5420;}
+.teacher-option {display:block;width:100%;text-align:left;padding:11px 13px;font-size:12px;color:#001f54;border-bottom:1px solid #f1f5f9;}
+.teacher-option:hover,.teacher-option:focus {background:#eaf1fb;transform:none!important;box-shadow:none!important;}
 </style>
 
 </head>
@@ -325,17 +330,11 @@
 
                             <div class="relative">
 
-                                <div class="teacher-picker"><select id="namaGuru" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-johorBlue focus:border-johorBlue p-3 appearance-none">
-
-                                    <option value="">-- Pilih Nama Guru --</option>
-
-                                </select><input type="search" id="searchGuruInput" placeholder="Cari nama guru..." aria-label="Cari nama guru" oninput="searchTeachers('namaGuru',this.value)" class="bg-white border border-slate-300 text-sm rounded-xl p-3 min-w-0"></div>
-
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-
-                                    <i class="fa-solid fa-chevron-down text-xs"></i>
-
-                                </div>
+                                <div class="teacher-autocomplete">
+<input type="hidden" id="namaGuru">
+<input type="search" id="searchGuruInput" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="searchGuruInput-suggestions" autocomplete="off" placeholder="Taip nama guru..." aria-label="Cari dan pilih nama guru" oninput="suggestTeachers('namaGuru')" onfocus="suggestTeachers('namaGuru',false)" class="w-full bg-white border border-slate-300 text-sm rounded-xl p-3">
+<div id="searchGuruInput-suggestions" role="listbox" class="teacher-suggestions hidden"></div>
+</div>
 
                             </div>
 
@@ -691,11 +690,11 @@
 
                         <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Tapis Nama Guru</label>
 
-                        <div class="teacher-picker"><select id="filterGuru" onchange="applyFilters()" class="w-full bg-white border border-slate-300 text-xs rounded-lg p-2.5">
-
-                            <option value="">Semua Guru</option>
-
-                        </select><input type="search" id="searchGuruArkib" placeholder="Cari nama guru..." aria-label="Cari nama guru" oninput="searchTeachers('filterGuru',this.value)" class="bg-white border border-slate-300 text-sm rounded-xl p-3 min-w-0"></div>
+                        <div class="teacher-autocomplete">
+<input type="hidden" id="filterGuru">
+<input type="search" id="searchGuruArkib"  role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="searchGuruArkib-suggestions" autocomplete="off" placeholder="Taip nama guru..." aria-label="Cari dan pilih nama guru" oninput="suggestTeachers('filterGuru')" onfocus="suggestTeachers('filterGuru',false)" class="w-full bg-white border border-slate-300 text-sm rounded-xl p-3">
+<div id="searchGuruArkib-suggestions" role="listbox" class="teacher-suggestions hidden"></div>
+</div>
 
                     </div>
 
@@ -1190,7 +1189,7 @@
 
             filteredRecordsList = savedRecordsList.filter(r => {
 
-                const matchGuru = !fGuru || (r.namaGuru && r.namaGuru.toLowerCase().includes(fGuru));
+                const matchGuru = !fGuru || (r.namaGuru && r.namaGuru.toLowerCase() === fGuru);
 
                 const matchSubjek = !fSubjek || (r.subjek && r.subjek.toLowerCase().includes(fSubjek));
 
@@ -1277,7 +1276,9 @@
 
             document.getElementById('oprForm').reset();
             document.getElementById('searchGuruInput').value='';
-            searchTeachers('namaGuru','');
+            document.getElementById('namaGuru').value='';
+            document.getElementById('searchGuruInput').setCustomValidity('');
+            closeTeacherSuggestions();
 
             uploadedBase64Images = [];
 
@@ -1354,14 +1355,15 @@ async function loadReferenceLists() {
             const response = await fetch(config.url, {cache:'no-store', signal:AbortSignal.timeout(25000)});
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const values = csvValues(await response.text(), config.aliases);
-            fillSelect(config.id, values, '-- Pilih '+config.label+' --');
+            if(config.id !== 'namaGuru')fillSelect(config.id, values, '-- Pilih '+config.label+' --');
             if (config.id === 'namaGuru') {
                 teacherList = values;
-                fillSelect('filterGuru', values, 'Semua Guru');
+                document.getElementById('searchGuruInput').disabled=false;
             }
             return config.label + ': ' + values.length;
         } catch (error) {
-            select.replaceChildren(new Option('Gagal memuatkan '+config.label+' — muat semula', ''));
+            if(config.id==='namaGuru')document.getElementById('searchGuruInput').placeholder='Gagal memuatkan nama — muat semula';
+            else select.replaceChildren(new Option('Gagal memuatkan '+config.label+' — muat semula', ''));
             throw new Error(config.label);
         }
     }));
@@ -1446,17 +1448,54 @@ async function deleteReport(record,button) {
 }
 </script>
 <script>
-function searchTeachers(selectId,query) {
-    const select=document.getElementById(selectId);
-    const previous=select.value;
-    const all=[...new Set([...teacherList,...savedRecordsList.map(r=>r.namaGuru).filter(Boolean)])];
-    const q=query.trim().toLocaleLowerCase('ms');
-    const matches=all.filter(name=>name.toLocaleLowerCase('ms').includes(q));
-    fillSelect(selectId,matches,selectId==='namaGuru'?'-- Pilih Nama Guru --':'Semua Guru');
-    if(previous && all.includes(previous) && !matches.includes(previous))select.add(new Option(previous,previous));
-    if(previous)select.value=previous;
-    if(selectId==='filterGuru')applyFilters();
+function normalizeName(name) {return String(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');}
+function nameDistance(a,b) {
+    let row=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){const next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,row[j]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));row=next;}return row[b.length];
 }
+function matchingTeachers(query,names) {
+    const q=normalizeName(query);if(!q)return names.slice(0,12);
+    return names.map(name=>{
+        const value=normalizeName(name);
+        let score=value===q?0:value.startsWith(q)?1:value.includes(q)?2:99;
+        if(score===99 && q.length>=3) {
+            const distance=Math.min(...value.split(' ').map(word=>nameDistance(q,word)));
+            if(distance<=Math.min(2,Math.floor(q.length/3)))score=3+distance;
+        }
+        return {name,score};
+    }).filter(item=>item.score<99).sort((a,b)=>a.score-b.score||a.name.localeCompare(b.name,'ms')).slice(0,12).map(item=>item.name);
+}
+function closeTeacherSuggestions() {
+    ['searchGuruInput','searchGuruArkib'].forEach(id=>{document.getElementById(id+'-suggestions').classList.add('hidden');document.getElementById(id).setAttribute('aria-expanded','false');});
+}
+function suggestTeachers(field,editing=true) {
+    const id=field==='namaGuru'?'searchGuruInput':'searchGuruArkib';
+    const input=document.getElementById(id),list=document.getElementById(id+'-suggestions');
+    if(editing) {
+        document.getElementById(field).value='';
+        if(field==='namaGuru')input.setCustomValidity(input.value.trim()?'Klik satu nama daripada senarai cadangan.':'');
+        else applyFilters();
+    }
+    const names=field==='namaGuru'?teacherList:[...new Set([...teacherList,...savedRecordsList.map(r=>r.namaGuru).filter(Boolean)])];
+    const matches=matchingTeachers(input.value,names);list.replaceChildren();
+    if(field==='filterGuru')addSuggestion('Semua Guru','');
+    matches.forEach(name=>addSuggestion(name,name));
+    if(!matches.length){const message=document.createElement('p');message.className='p-3 text-xs text-slate-500';message.textContent=names.length?'Tiada nama sepadan.':'Senarai guru belum dimuatkan.';list.appendChild(message);}
+    list.classList.remove('hidden');input.setAttribute('aria-expanded','true');
+    function addSuggestion(label,value) {
+        const button=document.createElement('button');button.type='button';button.role='option';button.className='teacher-option';button.textContent=label;
+        button.addEventListener('click',()=>{document.getElementById(field).value=value;input.value=value;input.setCustomValidity('');closeTeacherSuggestions();if(field==='filterGuru')applyFilters();});
+        list.appendChild(button);
+    }
+}
+document.addEventListener('click',event=>{if(!event.target.closest('.teacher-autocomplete'))closeTeacherSuggestions();});
+document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){closeTeacherSuggestions();return;}
+    const wrapper=event.target.closest('.teacher-autocomplete');if(!wrapper)return;
+    const items=[...wrapper.querySelectorAll('.teacher-option')];const index=items.indexOf(event.target);
+    if(event.key==='ArrowDown'&&items.length){event.preventDefault();items[(index+1)%items.length].focus();}
+    if(event.key==='ArrowUp'&&items.length){event.preventDefault();items[(index-1+items.length)%items.length].focus();}
+});
 function preparePrintScale() {
     const original=document.getElementById('opr-template');
     const clone=original.cloneNode(true);

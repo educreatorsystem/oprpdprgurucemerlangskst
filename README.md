@@ -1,3 +1,8 @@
+# Carian nama dengan cadangan
+Borang Input dan Arkib OPR menggunakan medan carian nama. Taip beberapa huruf untuk cadangan, kemudian klik nama untuk memilih. Padanan dekat turut menyokong salah ejaan kecil. Gunakan kekunci anak panah untuk memilih cadangan atau Escape untuk menutup. Dalam Arkib, pilih Semua Guru untuk membuang penapis.
+
+Untuk kemaskini ini, gantikan index.html di GitHub sahaja. Apps Script tidak berubah.
+
 # Kemaskini carian guru, objektif dan PDF satu halaman
 
 - Carian nama guru di sebelah dropdown dalam Borang Input dan Arkib OPR menapis pilihan nama.
