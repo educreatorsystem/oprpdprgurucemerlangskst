@@ -37,6 +37,13 @@ function doGet(e) {
   try {
     const params = (e && e.parameter) || {};
     if (params.action === 'getRecords') return json_(records_());
+    if (params.action === 'getThumbnail') {
+      const record = records_().find(r => r.id === params.id);
+      if (!record || !record.imageIds[0]) throw new Error('Gambar previu tidak ditemukan.');
+      const file = DriveApp.getFileById(record.imageIds[0]);
+      const blob = file.getThumbnail() || file.getBlob();
+      return json_({status:'success',thumbnail:'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes())});
+    }
     if (params.action === 'getRecord') {
       const record = records_().find(r => r.id === params.id);
       if (!record) throw new Error('Rekod tidak ditemukan.');
@@ -136,6 +143,7 @@ function adminLogin_(payload) {
   const username = String(payload.username || '').trim();
   const password = String(payload.password || '');
   if (username.length > 200 || password.length > 200) throw new Error('Maklumat log masuk tidak sah.');
+  if (!props.getProperty('ADMIN_PASSWORD_HASH') || !props.getProperty('ADMIN_PASSWORD_SALT')) resetAdmin();
   const expected = props.getProperty('ADMIN_PASSWORD_HASH');
   const salt = props.getProperty('ADMIN_PASSWORD_SALT');
   if (!expected || !salt) throw new Error('Admin belum dikonfigurasi. Jalankan setupAdmin.');
@@ -180,4 +188,15 @@ function deleteOPR_(payload) {
     if (!committed) changedFiles.forEach(file=>{try {file.setTrashed(false);} catch(restoreError){console.error(restoreError);}});
     throw error;
   } finally { if(acquired) lock.releaseLock(); }
+}
+
+/** Run resetAdmin sekali untuk membetulkan akaun kepada gurucemerlang / kata laluan asal yang diminta. */
+function resetAdmin() {
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty('ADMIN_USERNAME','gurucemerlang');
+  props.setProperty('ADMIN_PASSWORD_SALT','e4d028e7d32da3c8db0821ef7aa49c67a7c7197882bd952f');
+  props.setProperty('ADMIN_PASSWORD_HASH','2ff99802f27866b0fb5f6417ece51c6a043192e4d4e245b4b5c4f7435c3e30a8');
+  props.setProperty('ADMIN_SESSION_VERSION',Utilities.getUuid());
+  props.deleteProperty('ADMIN_PASSWORD');
+  console.log('Akaun admin ditetapkan semula. Deploy New version selepas menyimpan kod.');
 }

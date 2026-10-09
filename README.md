@@ -5,7 +5,7 @@
 - Rekod dipaparkan sebagai kad. Klik kad untuk membuka laporan penuh bersama gambar.
 - Tiga gambar bersebelahan, tanpa ruang tandatangan.
 - Font Manrope dan Outfit, animasi hover serta sokongan pilihan reduced motion.
-- Untuk kemaskini versi admin, gantikan index.html di GitHub, gantikan Code.gs dalam Apps Script, Run setupAdmin dan deploy New version. Refresh halaman selepas GitHub Pages selesai deploy.
+- Untuk kemaskini versi admin, gantikan index.html di GitHub, gantikan Code.gs dalam Apps Script, Run resetAdmin dan deploy New version. Refresh halaman selepas GitHub Pages selesai deploy.
 
 ## Kandungan
 - `index.html`: sistem untuk GitHub Pages.
@@ -13,10 +13,17 @@
 - `Code.gs`: kod backend Google Apps Script.
 - `appsscript.json`: manifest Apps Script.
 
+## Previu kad dan pembetulan log masuk
+1. Gantikan Code.gs dalam Apps Script dengan versi dalam ZIP ini.
+2. Run fungsi resetAdmin. Akaun gurucemerlang ditetapkan semula kepada kata laluan asal yang cikgu minta. Sesi lama dibatalkan.
+3. Deploy → Manage deployments → Edit → New version → Deploy. Kekalkan URL /exec yang sama.
+4. Gantikan index.html di GitHub dan tunggu GitHub Pages siap, kemudian refresh halaman.
+5. Setiap kad memaparkan gambar pertama sebagai previu. Klik kad untuk laporan penuh. API getThumbnail mengambil thumbnail Drive; jika thumbnail belum tersedia, API menggunakan gambar asal. Gambar tidak perlu dikongsi secara awam di Drive.
+
 ## Fungsi Admin dan Arkib OPR
 - Tab Rekod Disimpan dinamakan Arkib OPR.
 - Klik Log Masuk Admin dalam Arkib OPR. Akaun `gurucemerlang` menggunakan kata laluan yang cikgu tetapkan dalam permintaan.
-- Jalankan `setupAdmin` sekali selepas menyalin Code.gs baharu. Kata laluan lalai disimpan sebagai salted SHA-256; kata laluan sebenar tidak terkandung dalam index.html atau README.
+- Jalankan `resetAdmin` sekali selepas menyalin Code.gs baharu untuk membetulkan akaun kepada nama pengguna dan kata laluan yang diminta. Kata laluan lalai disimpan sebagai salted SHA-256; kata laluan sebenar tidak terkandung dalam index.html atau README.
 - Sesi admin sah selama 1 jam (cache Google boleh tamat lebih awal). Refresh halaman memerlukan log masuk semula. Log keluar membatalkan token.
 - Butang Padam OPR hanya muncul selepas log masuk. Pengesahan token turut dibuat oleh backend setiap kali pemadaman diminta.
 - Pemadaman memerlukan pengesahan pengguna. Baris laporan dibuang daripada DATA_OPR dan tiga gambar dipindahkan ke Tong Sampah Drive. Subfolder kosong dikekalkan. Jika pemadaman baris gagal, gambar yang dipindahkan ke Tong Sampah dipulihkan.
