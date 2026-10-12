@@ -1,3 +1,8 @@
+# Kemaskini paparan telefon
+Header telefon disusun dalam satu kawasan: lencana dan nama sekolah di atas, ilustrasi penuh di tengah, tiga tab sentuh di bawah. Gambar menggunakan nisbah asal tanpa dipotong dan tepi diadun dengan gradient biru. Tab mempunyai ikon dan label serta sasaran sentuh sekurang-kurangnya 54px. Nama sekolah boleh membalut mengikut lebar telefon.
+
+Gantikan index.html di GitHub sahaja. Assets dan Apps Script tidak berubah.
+
 # Header utama bersepadu
 Lencana, nama sekolah dan butang Borang Input / Pra-tonton OPR / Arkib OPR kini berada dalam header bergambar yang sama. Identiti sekolah di kiri atas dan navigasi di kiri bawah pada desktop. Telefon menggunakan susunan padat dalam header yang sama supaya teks dan ilustrasi kekal jelas.
 
