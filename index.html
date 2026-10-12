@@ -213,6 +213,23 @@
 .teacher-suggestions {position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:60;max-height:260px;overflow:auto;background:white;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 14px 30px #001f5420;}
 .teacher-option {display:block;width:100%;text-align:left;padding:11px 13px;font-size:12px;color:#001f54;border-bottom:1px solid #f1f5f9;}
 .teacher-option:hover,.teacher-option:focus {background:#eaf1fb;transform:none!important;box-shadow:none!important;}
+
+        body {background:#edf4fb url('assets/background-johor.png') center top / cover fixed no-repeat;}
+        .pdpr-banner {width:100%;background:#001f54;line-height:0;}
+        .pdpr-banner img {display:block;width:100%;height:auto;max-height:420px;object-fit:contain;}
+        #section-form > div {background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+        #section-records > div {background:rgba(255,255,255,.38);border-color:rgba(255,255,255,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 12px 35px rgba(0,31,84,.08);}
+        #section-records .record-card {background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(244,249,255,.62));border:1px solid rgba(255,255,255,.94);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 8px 22px rgba(0,31,84,.10);}
+        #section-records .record-card:hover {background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(238,245,255,.76));box-shadow:inset 0 1px 0 #fff,0 18px 34px rgba(0,31,84,.16);border-color:rgba(147,180,220,.8);}
+        #section-records .card-title {color:#0a1128;}
+        #section-records .card-date {color:#475569;}
+        #section-records .card-open {border-color:rgba(0,31,84,.13);}
+        @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+            #section-records > div {background:rgba(255,255,255,.86);}
+            #section-records .record-card {background:rgba(255,255,255,.94);}
+        }
+        @media(max-width:640px) {body {background-attachment:scroll;} #section-records > div {background:rgba(255,255,255,.60);} }
+        @media print {body {background:white!important;} .pdpr-banner {display:none!important;} }
 </style>
 
 </head>
@@ -223,7 +240,8 @@
 
     <!-- Application Header (No-Print) -->
 
-    <header class="no-print bg-gradient-to-r from-johorNavy via-johorBlue to-johorRed text-white shadow-lg sticky top-0 z-50">
+    <div class="no-print pdpr-banner"><img src="assets/header-pdpr.png" alt="OPR PdPR — Pengajaran dan Pembelajaran di Rumah, bersama guru dan murid" width="2048" height="682" fetchpriority="high"></div>
+    <header class="no-print bg-gradient-to-r from-johorNavy via-johorBlue to-johorRed text-white shadow-lg relative z-50">
 
         <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
 

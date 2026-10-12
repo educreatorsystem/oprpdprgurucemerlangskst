@@ -1,3 +1,11 @@
+# Header bergambar, latar Johor dan kad kaca
+
+- Header menggunakan gambar guru dan murid yang dibekalkan. Gambar dipaparkan dengan nisbah asal tanpa memotong tulisan.
+- Latar belakang menggunakan gambar geometri Johor.
+- Kad Arkib OPR menggunakan efek kaca, blur dan kelegapan kira-kira 62–78%; kelegapan meningkat semasa hover untuk kejelasan teks.
+- Efek dan gambar hiasan tidak masuk dalam cetakan OPR.
+- Gantikan index.html dan muat naik seluruh folder assets di GitHub. Apps Script tidak berubah.
+
 # Carian nama dengan cadangan
 Borang Input dan Arkib OPR menggunakan medan carian nama. Taip beberapa huruf untuk cadangan, kemudian klik nama untuk memilih. Padanan dekat turut menyokong salah ejaan kecil. Gunakan kekunci anak panah untuk memilih cadangan atau Escape untuk menutup. Dalam Arkib, pilih Semua Guru untuk membuang penapis.
 
