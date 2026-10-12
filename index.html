@@ -230,6 +230,24 @@
         }
         @media(max-width:640px) {body {background-attachment:scroll;} #section-records > div {background:rgba(255,255,255,.60);} }
         @media print {body {background:white!important;} .pdpr-banner {display:none!important;} }
+
+        .integrated-header {position:relative;isolation:isolate;background:#001f54;overflow:hidden;box-shadow:0 12px 32px #001f5420;}
+        .header-art {display:block;width:100%;height:auto;}
+        .header-content {position:absolute;inset:0;}
+        .header-school {position:absolute;top:clamp(12px,1.7vw,28px);left:4%;display:flex;align-items:center;gap:12px;max-width:55%;padding:9px 16px 9px 10px;border-radius:16px;background:rgba(0,20,62,.35);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);}
+        .header-school-logo {width:clamp(38px,3.8vw,62px);height:clamp(38px,3.8vw,62px);object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 5px #0004);}
+        .header-school-name {font-size:clamp(12px,1.25vw,21px);font-weight:800;letter-spacing:.025em;line-height:1.25;color:white;text-shadow:0 2px 6px #001f5466;}
+        .header-school-subtitle {font-size:clamp(9px,.8vw,13px);font-weight:500;color:#dbeafe;margin-top:4px;line-height:1.35;}
+        .header-tabs {position:absolute;bottom:clamp(12px,2vw,32px);left:4%;display:flex;gap:6px;padding:7px;border-radius:16px;background:rgba(0,20,62,.48);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-weight:600;font-size:clamp(11px,1vw,15px);box-shadow:0 8px 22px #0002;}
+        .header-tabs button {white-space:nowrap;padding:10px 15px;}
+        @media(max-width:700px) {
+            .integrated-header {padding-top:82px;padding-bottom:64px;}
+            .header-school {top:10px;left:12px;right:12px;max-width:none;padding:7px 10px;gap:9px;}
+            .header-school-name {font-size:12px;}
+            .header-school-subtitle {font-size:10px;}
+            .header-tabs {bottom:10px;left:12px;right:12px;justify-content:center;padding:5px;gap:2px;}
+            .header-tabs button {padding:9px 7px;gap:5px;font-size:11px;}
+        }
 </style>
 
 </head>
@@ -240,24 +258,23 @@
 
     <!-- Application Header (No-Print) -->
 
-    <div class="no-print pdpr-banner"><img src="assets/header-pdpr.png" alt="OPR PdPR — Pengajaran dan Pembelajaran di Rumah, bersama guru dan murid" width="2048" height="682" fetchpriority="high"></div>
-    <header class="no-print bg-gradient-to-r from-johorNavy via-johorBlue to-johorRed text-white shadow-lg relative z-50">
+    <header class="no-print integrated-header text-white relative">
+        <img class="header-art" src="assets/header-pdpr.png" alt="OPR PdPR — Pengajaran dan Pembelajaran di Rumah, bersama guru dan murid" width="2048" height="682" fetchpriority="high">
+        <div class="header-content">
 
-        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-
-            <div class="flex items-center gap-3 text-center md:text-left">
+            <div class="header-school">
 
                 <img data-school-logo="true"
 
                      alt="Lencana SK Sungai Tiram"
 
-                     class="w-12 h-14 object-contain bg-white/10 p-1 rounded-lg backdrop-blur-sm border border-white/20">
+                     class="header-school-logo">
 
                 <div>
 
-                    <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-tight">SEKOLAH KEBANGSAAN SUNGAI TIRAM</h1>
+                    <h1 class="header-school-name">SEKOLAH KEBANGSAAN SUNGAI TIRAM</h1>
 
-                    <p class="text-xs text-blue-200 font-medium">Sistem Penjanaan One Page Report (OPR) PdPR / PdPC</p>
+                    <p class="header-school-subtitle">Sistem Penjanaan One Page Report (OPR) PdPR / PdPC</p>
 
                 </div>
 
@@ -267,7 +284,7 @@
 
             <!-- Navigation Tabs -->
 
-            <nav class="flex bg-white/10 p-1 rounded-xl backdrop-blur-md border border-white/20 text-sm font-semibold">
+            <nav class="header-tabs" aria-label="Navigasi sistem OPR">
 
                 <button id="tab-form-btn" onclick="switchTab('form')" class="px-4 py-2 rounded-lg transition-all flex items-center gap-2 bg-white text-johorBlue shadow">
 

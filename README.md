@@ -1,3 +1,8 @@
+# Header utama bersepadu
+Lencana, nama sekolah dan butang Borang Input / Pra-tonton OPR / Arkib OPR kini berada dalam header bergambar yang sama. Identiti sekolah di kiri atas dan navigasi di kiri bawah pada desktop. Telefon menggunakan susunan padat dalam header yang sama supaya teks dan ilustrasi kekal jelas.
+
+Gantikan index.html di GitHub. Gambar assets dan Apps Script kekal sama.
+
 # Header bergambar, latar Johor dan kad kaca
 
 - Header menggunakan gambar guru dan murid yang dibekalkan. Gambar dipaparkan dengan nisbah asal tanpa memotong tulisan.
