@@ -1,0 +1,72 @@
+@media screen {
+  :root {--game-blue:#00247d;--game-red:#e52521;--game-yellow:#fcd116;--game-ink:#172b53;}
+  [hidden] {display:none!important;}
+  body {font-family:'Fredoka',sans-serif;background:#5c94fc;background-image:radial-gradient(circle at 10% 20%,#ffffff55,transparent 22%),radial-gradient(circle at 80% 60%,#ffffff44,transparent 25%);background-attachment:fixed;color:#172b53;}
+  h1,h2,h3,nav,button,input,select,textarea {font-family:'Fredoka',sans-serif;}
+  .integrated-header {display:flex!important;flex-direction:column;max-width:1120px;margin:20px auto 0;width:calc(100% - 32px);padding:0!important;border:4px solid #172b53;border-radius:26px;background:#0b2b65;box-shadow:0 8px 0 #142b5855,0 20px 48px #00247d33;overflow:hidden;gap:0!important;}
+  .mario-hero-art {position:relative;background:#36b3f5;}
+  .mario-hero-art img {display:block;width:100%;height:auto;aspect-ratio:3/1;object-fit:contain;}
+  .mario-hero-art:after {content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 75%,#0b2b6530 88%,#0b2b65);}
+  .header-content {position:relative!important;inset:auto!important;display:flex!important;flex-direction:column;gap:18px;padding:16px 22px 22px;background:linear-gradient(#0b2b65,#103e83);}
+  .header-toolbar {display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;width:100%;}
+  .header-school {position:static!important;max-width:100%!important;width:auto!important;display:flex;align-items:center;gap:12px;padding:0!important;background:none!important;border:0!important;backdrop-filter:none!important;}
+  .header-school>div {min-width:0;}
+  .header-school-logo {width:64px!important;height:64px!important;object-fit:contain;border:2px solid #fcd116;border-radius:14px;padding:0;background:#5c94fc;image-rendering:pixelated;}
+  .header-school-name {font-size:clamp(13px,1.5vw,19px)!important;line-height:1.4;letter-spacing:.01em;color:#fff;text-shadow:none!important;}
+  .header-school-subtitle {font-size:12px!important;color:#cce9ff;line-height:1.5;margin-top:3px;}
+  .hero-actions {display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+  .hero-actions button {position:static!important;min-height:40px;border:2px solid #172b53;padding:9px 12px;border-radius:12px!important;font-size:12px;box-shadow:0 3px 0 #0004;font-weight:700;}
+  #installAppButton {background:white;color:#e52521;}
+  .sound-control {background:#fcd116;color:#172b53;}
+  .header-tabs {position:static!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%!important;padding:0!important;gap:12px;background:none!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;}
+  .header-tabs button {font-family:'Press Start 2P',monospace;min-width:0;min-height:54px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px!important;line-height:1.8;padding:12px 10px!important;border:3px solid #172b53;border-radius:14px!important;box-shadow:0 4px 0 #0005;white-space:normal;background:#2563eb;color:white!important;}
+  #tab-records-btn {background:#43b047;}
+  .header-tabs button.bg-white {background:#fcd116!important;color:#172b53!important;}
+  button:not(.teacher-option) {font-weight:700;transition:transform .15s,box-shadow .15s,filter .15s;}
+  button:hover:not(:disabled) {transform:translateY(-2px);filter:brightness(1.04);}
+  button:active:not(:disabled) {transform:translate(2px,2px);}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {outline:3px solid #fcd116;outline-offset:3px;}
+  #section-form>div,#section-records>div {background:#fff!important;border:4px solid #172b53!important;box-shadow:6px 6px 0 #172b53!important;border-radius:18px!important;backdrop-filter:none!important;}
+  #section-form h2,#section-records h2 {color:#e52521;font-family:'Press Start 2P',monospace;font-size:13px;line-height:1.9;}
+  #section-records .record-card {background:linear-gradient(135deg,#fffce9,#fff)!important;border:3px solid #172b53!important;box-shadow:5px 5px 0 #172b53!important;border-radius:16px!important;backdrop-filter:none!important;}
+  .record-card:before {height:7px;background:repeating-linear-gradient(90deg,#e52521 0 22px,#fcd116 22px 44px,#43b047 44px 66px,#2563eb 66px 88px)!important;}
+  #section-records .record-card:hover {background:#fff8cf!important;transform:translateY(-4px);box-shadow:7px 9px 0 #172b53!important;}
+  .card-badge {background:#dbeafe!important;border:1px solid #172b5333;}.card-badge.class {background:#fee2e2!important;}
+  input:not([type=hidden]),select,textarea {border-width:2px!important;font-family:'Fredoka',sans-serif;}
+  #submitBtn {background:#e52521!important;border:3px solid #172b53;box-shadow:4px 4px 0 #172b53;}
+  #admin-dialog,#game-welcome,#install-help {border:4px solid #172b53;background:#fffbdf;border-radius:18px;color:#172b53;}
+  #game-welcome,#install-help {width:min(90vw,430px);padding:26px;text-align:center;}
+  #game-welcome h2,#install-help h2 {font:16px/1.8 'Press Start 2P',monospace;color:#e52521;}
+  #game-welcome p,#install-help p {margin:18px 0;line-height:1.6;}
+  .start-game {background:#e52521;color:white;border:3px solid #172b53;padding:12px 18px;box-shadow:4px 4px 0 #172b53;border-radius:12px;}
+  .connection-notice {max-width:1120px;margin:16px auto 0;padding:12px 16px;background:#fff3b0;color:#172b53;border:2px solid #172b53;border-radius:12px;font-size:14px;line-height:1.5;}
+  #updateAppButton {margin-left:8px;padding:6px 12px;background:#e52521;color:#fff;border:2px solid #172b53;border-radius:8px;}
+  @media(max-width:700px) {
+    .integrated-header {margin:12px 10px 0;width:calc(100% - 20px);border-width:3px;border-radius:18px;}
+    .header-content {padding:10px 12px 16px;gap:14px;}
+    .header-toolbar {justify-content:center;gap:12px;}
+    .header-school {width:100%!important;justify-content:center;gap:10px;}
+    .header-school-logo {width:52px!important;height:52px!important;flex-shrink:0;}
+    .header-school-name {font-size:13px!important;}
+    .header-school-subtitle {font-size:10px!important;}
+    .hero-actions {justify-content:center;width:100%;}
+    .header-tabs {gap:7px;}
+    .header-tabs button {font-size:8px!important;padding:9px 5px!important;min-height:58px;flex-direction:column;gap:5px;border-width:2px;border-radius:11px!important;}
+    .header-tabs button i {font-size:14px;}
+    #section-form>div,#section-records>div {padding:18px!important;border-width:3px!important;}
+    #section-form h2,#section-records h2 {font-size:10px;}
+    main {padding:20px 12px!important;}
+    .connection-notice {margin:14px 12px 0;}
+    #teacher-status {max-width:100%;line-height:1.6;}
+    #section-form>div>div:first-child {flex-wrap:wrap;gap:12px;}
+  }
+  @media(prefers-reduced-motion:reduce) {*,*:before,*:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;}button:hover,.record-card:hover {transform:none!important;}}
+}
+@media print {.sound-control,#game-welcome,#install-help,.connection-notice {display:none!important;}body {background:white!important;}#opr-template,#opr-template * {font-family:'Fredoka',sans-serif;}}
+
+@media screen {
+.mario-hero-art .hero-title {position:absolute;left:6%;top:27%;z-index:2;max-width:52%;color:#fff8c5;text-shadow:3px 3px #b84a39,5px 5px #172b53;}
+.hero-title h2 {font:clamp(13px,3.3vw,38px)/1.7 'Press Start 2P',monospace;margin:0;white-space:nowrap;}
+.hero-title p {font:700 clamp(8px,1.5vw,17px)/1.8 'Fredoka',sans-serif;letter-spacing:.08em;color:#fff;margin:7px 0 0;text-shadow:2px 2px #172b53;}
+@media(max-width:700px) {.mario-hero-art .hero-title {top:24%;text-shadow:1px 2px #b84a39,2px 3px #172b53;}.hero-title p {margin-top:3px;}}
+}

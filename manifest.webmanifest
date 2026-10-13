@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Super OPR SK Sungai Tiram — Mario Edition",
+  "short_name": "Super OPR",
+  "description": "Penjana OPR PdPR dan PdPC SK Sungai Tiram dalam tema Mario Edition.",
+  "lang": "ms-MY",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#5C94FC",
+  "theme_color": "#E52521",
+  "icons": [
+    {"src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
