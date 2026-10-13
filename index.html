@@ -64,7 +64,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
 
 
@@ -266,6 +266,55 @@
             .header-school-logo {width:42px;height:42px;}
             .header-tabs button {min-height:44px;padding:9px 12px;}
         }
+
+        :root {--game-blue:#2589ed;--game-red:#e83832;--game-yellow:#ffd34e;--game-ink:#173053;}
+        body {font-family:'Nunito',sans-serif;background-color:#cdefff;background-image:radial-gradient(ellipse at 10% 12%,#fff9 0,transparent 32%),linear-gradient(#78caff,#d5f3ff);background-attachment:fixed;color:var(--game-ink);}
+        h1,h2,h3,nav,button {font-family:'Nunito',sans-serif;}
+        .integrated-header {display:flex!important;flex-direction:column;padding:0!important;gap:0!important;background:#62b6ff;border-bottom:6px solid #173053;overflow:hidden;}
+        .header-content {position:relative!important;inset:auto!important;display:flex!important;flex-direction:column;align-items:center;gap:14px;padding:20px 16px;background:linear-gradient(180deg,#1667c1,#1250a0);}
+        .header-school {position:relative!important;top:auto!important;left:auto!important;right:auto!important;max-width:100%!important;width:auto!important;display:flex;padding:0!important;background:none!important;border:0!important;backdrop-filter:none!important;}
+        .header-school-logo {width:52px!important;height:52px!important;background:#fff;border:3px solid #ffd34e;border-radius:12px;padding:3px;}
+        .header-school-name {font-size:clamp(13px,1.6vw,22px)!important;letter-spacing:0!important;text-shadow:2px 2px #173053;}
+        .header-school-subtitle {font-size:12px!important;}
+        .header-tabs {position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;width:min(100%,650px)!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;background:none;border:0;box-shadow:none;padding:0!important;backdrop-filter:none;}
+        button:not(.teacher-option) {border-radius:10px!important;font-weight:900;transition:transform .15s,box-shadow .15s;}
+        .header-tabs button {min-height:54px;font-size:13px!important;justify-content:center;white-space:normal;padding:10px!important;border:3px solid #173053;background:#e83832;color:white;box-shadow:0 5px 0 #173053;}
+        .header-tabs button.bg-white {background:#ffd34e!important;color:#173053!important;}
+        button:hover:not(:disabled) {transform:translateY(-3px);}
+        button:active:not(:disabled) {transform:translateY(2px);}
+        .game-world {position:relative;height:290px;width:100%;overflow:hidden;background:linear-gradient(#3997f2,#88d1ff);}
+        .world-label {position:absolute;top:22px;left:5%;font:10px 'Press Start 2P',monospace;color:white;text-shadow:2px 2px #173053;display:flex;gap:24px;z-index:2;}
+        .game-title {position:absolute;left:8%;top:84px;font:clamp(24px,4vw,52px) 'Press Start 2P',monospace;color:#fff4cc;text-shadow:4px 4px #ae2d25,7px 7px #173053;line-height:1.4;z-index:2;}
+        .game-title span {display:block;font:800 clamp(12px,1.7vw,20px) 'Nunito',sans-serif;text-shadow:2px 2px #173053;color:white;margin-top:12px;}
+        .game-cloud {position:absolute;width:120px;height:34px;background:white;border-radius:30px;opacity:.9;}
+        .game-cloud:before,.game-cloud:after {content:'';position:absolute;background:white;border-radius:50%;width:50px;height:50px;top:-25px;left:22px;}
+        .game-cloud:after {left:58px;top:-18px;}
+        .cloud-one {left:37%;top:68px;}.cloud-two {left:78%;top:72px;}
+        .game-blocks {position:absolute;right:20%;top:120px;display:flex;gap:8px;}
+        .game-blocks b {display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:#ffbc34;border:4px solid #a56121;box-shadow:inset 3px 3px #ffe885,3px 3px #173053;font:23px 'Press Start 2P',monospace;color:white;text-shadow:2px 2px #a56121;}
+        .game-pipe {position:absolute;right:7%;bottom:30px;width:70px;height:80px;background:linear-gradient(90deg,#167d36,#64d744,#1f9936);border:4px solid #174328;}
+        .game-pipe:before {content:'';position:absolute;top:-15px;left:-10px;width:82px;height:24px;background:linear-gradient(90deg,#167d36,#64d744,#1f9936);border:4px solid #174328;}
+        .game-ground {position:absolute;bottom:0;left:0;right:0;height:30px;border-top:6px solid #6bb944;background:repeating-linear-gradient(90deg,#b76532 0 26px,#633919 26px 30px);box-shadow:inset 0 4px #efa655;}
+        .game-hero {position:absolute;right:35%;bottom:29px;width:55px;height:85px;filter:drop-shadow(3px 3px #173053);}
+        .game-hero span {position:absolute;display:block;}
+        .hero-cap {top:0;left:2px;width:47px;height:24px;border-radius:13px 13px 2px 2px;background:#e83832;color:white;text-align:center;font-weight:900;}
+        .hero-face {top:24px;left:9px;width:36px;height:28px;background:#ffc991;border-radius:4px;color:#53371d;text-align:center;font-size:13px;}
+        .hero-body {bottom:0;width:55px;height:35px;background:#1462b8;border:8px solid #e83832;border-bottom:8px solid #61422d;color:#ffd34e;}
+        #section-form > div,#section-records > div {background:rgba(255,255,255,.94)!important;border:3px solid #173053!important;border-radius:20px!important;box-shadow:0 7px 0 #17305324!important;backdrop-filter:none!important;}
+        #section-records .record-card {background:#fff9e4!important;border:3px solid #173053!important;box-shadow:0 6px 0 #173053!important;border-radius:14px!important;backdrop-filter:none!important;}
+        .record-card:before {height:7px;background:repeating-linear-gradient(90deg,#e83832 0 20px,#ffd34e 20px 40px,#49b659 40px 60px,#2589ed 60px 80px)!important;}
+        #section-records .record-card:hover {background:#fff2bd!important;box-shadow:0 9px 0 #173053!important;}
+        .card-badge {background:#d7edff!important;border:1px solid #17305333;}.card-badge.class {background:#ffe0dc!important;}
+        input:not([type=hidden]),select,textarea {font-family:'Nunito',sans-serif;border-width:2px!important;}
+        #submitBtn {background:linear-gradient(135deg,#e83832,#bc211c)!important;border:2px solid #173053;box-shadow:0 4px 0 #173053;}
+        #admin-dialog {border:4px solid #173053!important;background:#fff8da;border-radius:16px;}
+        .sound-control {position:fixed;right:16px;bottom:16px;z-index:80;background:#ffd34e;color:#173053;padding:10px 14px;border:3px solid #173053;box-shadow:0 4px 0 #173053;font-size:12px;}
+        #game-welcome {border:4px solid #173053;border-radius:18px;background:#fff7d6;width:min(90vw,430px);padding:28px;text-align:center;color:#173053;}
+        #game-welcome h2 {font:18px 'Press Start 2P',monospace;line-height:1.8;color:#e83832;}
+        #game-welcome p {margin:16px 0;line-height:1.7;}
+        .start-game {background:#e83832;color:white;border:3px solid #173053;padding:12px 22px;box-shadow:0 4px 0 #173053;}
+        @media(max-width:700px) {.game-world {height:235px;}.game-title {left:6%;top:74px;font-size:25px;}.game-blocks {right:12%;top:145px;}.game-blocks b {width:33px;height:33px;font-size:16px;}.game-pipe {right:5%;width:45px;height:47px;}.game-pipe:before {width:57px;}.game-hero {right:38%;transform:scale(.65);transform-origin:bottom;}.header-tabs {gap:6px;}.header-tabs button {font-size:11px!important;min-height:58px;}.world-label {font-size:8px;gap:12px;}.sound-control {right:10px;bottom:10px;font-size:11px;}.cloud-one {left:45%;}.cloud-two {left:80%;top:110px;}}
+        @media print {.sound-control,#game-welcome {display:none!important;}body {background:white!important;}#opr-template,#opr-template * {font-family:'Nunito',sans-serif;} }
 </style>
 
 </head>
@@ -277,7 +326,14 @@
     <!-- Application Header (No-Print) -->
 
     <header class="no-print integrated-header text-white relative">
-        <img class="header-art" src="assets/header-pdpr.png" alt="OPR PdPR — Pengajaran dan Pembelajaran di Rumah, bersama guru dan murid" width="2048" height="682" fetchpriority="high">
+        <div class="game-world" aria-label="Dunia permainan Mario dan Bros">
+<div class="game-cloud cloud-one"></div><div class="game-cloud cloud-two"></div>
+<div class="world-label">WORLD OPR <span>★</span> <span>● × 03</span></div>
+<h2 class="game-title">SUPER OPR<span>Mario &amp; Bros Adventure</span></h2>
+<div class="game-blocks" aria-hidden="true"><b>?</b><b>★</b><b>?</b></div>
+<div class="game-hero" aria-hidden="true"><span class="hero-cap">M</span><span class="hero-face">●</span><span class="hero-body">▰</span></div>
+<div class="game-pipe" aria-hidden="true"></div><div class="game-ground" aria-hidden="true"></div>
+</div>
         <div class="header-content">
 
             <div class="header-school">
@@ -797,6 +853,8 @@
 
 
     </main>
+<button type="button" id="sound-control" class="sound-control no-print" onclick="toggleGameSound()" aria-pressed="false">🔇 Bunyi: Tutup</button>
+<dialog id="game-welcome" class="no-print"><h2>SUPER OPR</h2><p>Selamat datang ke dunia OPR Mario &amp; Bros!<br>Pilih cara cikgu mahu bermula.</p><button class="start-game" type="button" onclick="startGame(true)">▶ Mula dengan bunyi</button><button type="button" onclick="startGame(false)" class="block mx-auto mt-4 text-sm underline">Mula tanpa bunyi</button></dialog>
     <dialog id="admin-dialog" class="rounded-2xl p-0 w-full max-w-sm shadow-xl border border-slate-200">
         <form id="admin-form" onsubmit="loginAdmin(event)" class="p-6 space-y-4">
             <div class="flex justify-between items-center"><h2 class="text-xl font-bold text-johorBlue">Log Masuk Admin</h2><button type="button" onclick="document.getElementById('admin-dialog').close()" aria-label="Tutup" class="text-slate-500 px-2 py-1">✕</button></div>
@@ -1566,6 +1624,34 @@ async function printOnePage() {
     preparePrintScale();window.print();
 }
 window.addEventListener('beforeprint',preparePrintScale);
+</script>
+<script>
+let gameAudio=null,gameSound=false;
+function gameTone(notes) {
+ if(!gameSound)return;
+ try {
+  if(!gameAudio)gameAudio=new (window.AudioContext||window.webkitAudioContext)();
+  gameAudio.resume().then(()=>{
+   const base=gameAudio.currentTime;
+   notes.forEach(([frequency,start,duration])=>{
+    const oscillator=gameAudio.createOscillator(),gain=gameAudio.createGain();
+    oscillator.type='square';oscillator.frequency.setValueAtTime(frequency,base+start);
+    gain.gain.setValueAtTime(0,base+start);gain.gain.linearRampToValueAtTime(.025,base+start+.008);gain.gain.exponentialRampToValueAtTime(.001,base+start+duration);
+    oscillator.connect(gain);gain.connect(gameAudio.destination);oscillator.start(base+start);oscillator.stop(base+start+duration+.01);
+   });
+  }).catch(()=>{});
+ }catch(error){gameSound=false;updateSoundButton();}
+}
+function updateSoundButton(){const button=document.getElementById('sound-control');button.textContent=gameSound?'🔊 Bunyi: Aktif':'🔇 Bunyi: Tutup';button.setAttribute('aria-pressed',String(gameSound));}
+function startGame(sound){gameSound=sound;document.getElementById('game-welcome').close();updateSoundButton();if(sound)gameTone([[523,0,.09],[784,.11,.09],[1047,.22,.16],[1319,.40,.12]]);}
+function toggleGameSound(){gameSound=!gameSound;updateSoundButton();if(gameSound)gameTone([[880,0,.07],[1320,.08,.11]]);}
+document.addEventListener('click',event=>{
+ const target=event.target.closest('button');if(!target||target.closest('#game-welcome')||target.id==='sound-control')return;
+ if(target.id==='submitBtn')gameTone([[440,0,.06],[660,.08,.06],[880,.16,.09]]);
+ else if(target.classList.contains('teacher-option'))gameTone([[1047,0,.05],[1568,.06,.07]]);
+ else gameTone([[620,0,.035],[930,.04,.045]]);
+});
+document.addEventListener('DOMContentLoaded',()=>document.getElementById('game-welcome').showModal());
 </script>
 </body>
 
