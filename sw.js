@@ -1,8 +1,8 @@
 /* Cache only this app's static shell. Never cache Google API requests. */
 const APP_PREFIX = 'super-opr-' + self.registration.scope;
-const CACHE_NAME = APP_PREFIX + 'mario-v1';
+const CACHE_NAME = APP_PREFIX + 'mario-v2-bulk-audio';
 const FILES = [
-  './', './index.html', './offline.html', './pwa.js', './mario-edition.css', './manifest.webmanifest',
+  './', './index.html', './offline.html', './pwa.js', './bulk-opr.js', './game-audio.js', './mario-edition.css', './manifest.webmanifest',
   './assets/tailwind.js', './assets/fonts.css', './assets/fontawesome.css',
   './assets/font-0.ttf', './assets/font-1.ttf', './assets/font-2.ttf', './assets/font-3.ttf',
   './assets/webfonts/fa-solid-900.woff2', './assets/webfonts/fa-regular-400.woff2', './assets/webfonts/fa-brands-400.woff2',

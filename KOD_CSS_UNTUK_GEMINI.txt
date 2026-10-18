@@ -63,6 +63,19 @@
   @media(prefers-reduced-motion:reduce) {*,*:before,*:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;}button:hover,.record-card:hover {transform:none!important;}}
 }
 @media print {.sound-control,#game-welcome,#install-help,.connection-notice {display:none!important;}body {background:white!important;}#opr-template,#opr-template * {font-family:'Fredoka',sans-serif;}}
+/* Extra admin controls use the current Mario palette; existing artwork is unchanged. */
+@media screen {
+  .bulk-panel {margin:0 0 22px;padding:18px;background:#fffbe1;border:3px solid #172b53;border-radius:16px;box-shadow:4px 4px 0 #172b5322;}
+  .bulk-panel h3 {margin:0 0 10px;font-weight:700;font-size:17px;color:#172b53;}
+  .bulk-panel p {font-size:13px;line-height:1.6;margin:8px 0 0;}
+  .bulk-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .bulk-actions button {padding:10px 12px;background:white;color:#172b53;border:2px solid #172b53;border-radius:10px;box-shadow:2px 3px 0 #172b53;font-size:12px;}
+  #bulk-select {background:#fcd116;}#bulk-generate {background:#43b047;color:white;}#bulk-cancel {background:#e52521;color:white;}
+  .bulk-actions button:disabled {opacity:.45;cursor:not-allowed;box-shadow:none;transform:none;}
+  .bulk-choice {display:flex;align-items:center;gap:9px;font:600 13px Fredoka,sans-serif;color:#172b53;cursor:pointer;}
+  .bulk-choice input {width:19px;height:19px;accent-color:#43b047;flex-shrink:0;}
+  @media(max-width:550px) {.bulk-actions {display:grid;grid-template-columns:1fr 1fr;}.bulk-actions button {min-height:46px;font-size:11px;}#bulk-generate {grid-column:1/-1;}}
+}
 
 @media screen {
 .mario-hero-art .hero-title {position:absolute;left:6%;top:27%;z-index:2;max-width:52%;color:#fff8c5;text-shadow:3px 3px #b84a39,5px 5px #172b53;}

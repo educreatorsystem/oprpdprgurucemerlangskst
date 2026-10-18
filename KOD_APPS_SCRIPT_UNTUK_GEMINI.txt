@@ -92,6 +92,8 @@ function doPost(e) {
     const payload = JSON.parse(e && e.postData ? e.postData.contents : '{}');
     if (payload.action === 'adminLogin') return json_(adminLogin_(payload));
     if (payload.action === 'adminLogout') { adminLogout_(payload.token); return json_({status:'success'}); }
+    if (payload.action === 'verifyAdmin') { requireAdmin_(payload.token); return json_({status:'success'}); }
+    if (payload.action === 'getBulkRecords') return json_(bulkRecords_(payload));
     if (payload.action === 'deleteOPR') return json_(deleteOPR_(payload));
     if (payload.action !== 'saveOPR') throw new Error('Action tidak sah.');
     const id = payload.id ? text_(payload.id, 'ID', 100) : 'OPR-' + Utilities.getUuid();
@@ -174,6 +176,34 @@ function requireAdmin_(token) {
 }
 function adminLogout_(token) {
   if (typeof token === 'string' && token.length <= 200) CacheService.getScriptCache().remove('admin:' + hash_(token));
+}
+/** Fetch three reports at a time. This path always requires a valid admin session. */
+function bulkRecords_(payload) {
+  requireAdmin_(payload.token);
+  if (!Array.isArray(payload.ids) || !payload.ids.length || payload.ids.length > 3) throw new Error('Pilih 1 hingga 3 ID bagi setiap permintaan pukal.');
+  const ids = payload.ids.map(id => {
+    if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,100}$/.test(id)) throw new Error('ID laporan pukal tidak sah.');
+    return id;
+  });
+  if (new Set(ids).size !== ids.length) throw new Error('ID laporan pukal berulang.');
+  const source = records_();
+  const records = ids.map(id => {
+    const found = source.find(record => record.id === id);
+    if (!found) throw new Error('Rekod ' + id + ' tidak ditemukan. Muat semula arkib dan pilih semula.');
+    const record = Object.assign({}, found);
+    record.images = record.imageIds.map((fileId, index) => {
+      if (!fileId) return '';
+      requireAdmin_(payload.token);
+      try {
+        const blob = DriveApp.getFileById(fileId).getBlob();
+        if (!/^image\/(jpeg|png|webp)$/.test(blob.getContentType())) throw new Error('Format gambar tidak disokong.');
+        return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+      } catch(error) { throw new Error('Gambar ' + (index + 1) + ' untuk OPR ' + id + ' tidak dapat diambil. ' + error.message); }
+    });
+    return record;
+  });
+  requireAdmin_(payload.token);
+  return {status:'success', records:records};
 }
 function deleteOPR_(payload) {
   requireAdmin_(payload.token);

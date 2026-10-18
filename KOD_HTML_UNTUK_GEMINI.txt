@@ -752,7 +752,19 @@
 <div class="mb-5 flex flex-wrap gap-3 items-center">
                     <button id="admin-login-btn" type="button" onclick="document.getElementById('admin-dialog').showModal()" class="px-4 py-2 rounded-xl bg-johorBlue text-white text-xs font-bold"><i class="fa-solid fa-user-shield mr-1"></i> Log Masuk Admin</button>
                     <button id="admin-logout-btn" type="button" onclick="logoutAdmin()" class="hidden px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold">Log Keluar Admin</button>
-                    <span id="admin-status" role="status" class="text-xs text-slate-500">Hanya admin boleh memadam laporan.</span>
+                    <span id="admin-status" role="status" class="text-xs text-slate-500">Hanya admin boleh memadam laporan dan menjana OPR pukal.</span>
+                </div>
+                <div id="bulk-panel" hidden class="bulk-panel">
+                    <h3>⭐ Jana OPR Pukal — Admin</h3>
+                    <p>Pilih laporan pada kad atau gunakan pilihan mengikut tapisan. Satu OPR akan dimuatkan pada setiap halaman A4.</p>
+                    <div class="bulk-actions">
+                        <button id="bulk-select" type="button" onclick="selectFilteredBulk()">Pilih semua dalam tapisan</button>
+                        <button id="bulk-clear" type="button" onclick="clearBulkSelection()">Kosongkan pilihan</button>
+                        <button id="bulk-generate" type="button" onclick="generateBulkOPR()" disabled>Jana OPR Pukal / PDF</button>
+                        <button id="bulk-cancel" type="button" onclick="cancelBulkOPR()" hidden>Batal penjanaan</button>
+                    </div>
+                    <p id="bulk-count" aria-live="polite">0 laporan dipilih</p>
+                    <p id="bulk-progress" role="status" aria-live="polite"></p>
                 </div>
                 <!-- Filters Bar -->
 
@@ -1297,7 +1309,9 @@
                 const empty = document.createElement('p');
                 empty.className = 'text-sm text-slate-500 p-8 text-center';
                 empty.textContent = 'Tiada rekod OPR dijumpai.';
-                container.appendChild(empty); return;
+                container.appendChild(empty);
+                if (typeof updateBulkUI === 'function') updateBulkUI();
+                return;
             }
             filteredRecordsList.forEach((rec,idx) => {
                 const card = document.createElement('article');
@@ -1322,12 +1336,14 @@
                     removeButton.textContent='Padam OPR';
                     removeButton.addEventListener('click',()=>deleteReport(rec,removeButton));
                     card.appendChild(removeButton);
+                    if (typeof appendBulkChoice === 'function') appendBulkChoice(card,rec);
                 }
                 // Klik permukaan kad membuka laporan; butang padam tidak membuka laporan.
-                card.addEventListener('click',event=>{if(!event.target.closest('button'))openButton.click();});
+                card.addEventListener('click',event=>{if(!event.target.closest('button,input,label'))openButton.click();});
                 container.appendChild(card);
 
             });
+            if (typeof updateBulkUI === 'function') updateBulkUI();
         }
 
         async function viewRecord(id) {
@@ -1481,13 +1497,15 @@ async function apiPost(payload) {
     return result;
 }
 function clearAdmin() {
-    adminSession=null;clearTimeout(adminTimer);updateAdminUI();
+    adminSession=null;clearTimeout(adminTimer);
+    if (typeof resetBulkAdmin === 'function') resetBulkAdmin();
+    updateAdminUI();
 }
 function updateAdminUI() {
     const active = !!adminSession && adminSession.expiresAt > Date.now();
     document.getElementById('admin-login-btn').classList.toggle('hidden',active);
     document.getElementById('admin-logout-btn').classList.toggle('hidden',!active);
-    document.getElementById('admin-status').textContent=active?'Admin aktif: '+adminSession.username+' • Sesi 1 jam':'Hanya admin boleh memadam laporan.';
+    document.getElementById('admin-status').textContent=active?'Admin aktif: '+adminSession.username+' • Sesi 1 jam':'Hanya admin boleh memadam laporan dan menjana OPR pukal.';
     renderRecordsTable();
 }
 async function loginAdmin(event) {
@@ -1589,34 +1607,8 @@ async function printOnePage() {
 }
 window.addEventListener('beforeprint',preparePrintScale);
 </script>
-<script>
-let gameAudio=null,gameSound=false;
-function gameTone(notes) {
- if(!gameSound)return;
- try {
-  if(!gameAudio)gameAudio=new (window.AudioContext||window.webkitAudioContext)();
-  gameAudio.resume().then(()=>{
-   const base=gameAudio.currentTime;
-   notes.forEach(([frequency,start,duration])=>{
-    const oscillator=gameAudio.createOscillator(),gain=gameAudio.createGain();
-    oscillator.type='square';oscillator.frequency.setValueAtTime(frequency,base+start);
-    gain.gain.setValueAtTime(0,base+start);gain.gain.linearRampToValueAtTime(.025,base+start+.008);gain.gain.exponentialRampToValueAtTime(.001,base+start+duration);
-    oscillator.connect(gain);gain.connect(gameAudio.destination);oscillator.start(base+start);oscillator.stop(base+start+duration+.01);
-   });
-  }).catch(()=>{});
- }catch(error){gameSound=false;updateSoundButton();}
-}
-function updateSoundButton(){const button=document.getElementById('sound-control');button.textContent=gameSound?'🔊 Bunyi: Aktif':'🔇 Bunyi: Tutup';button.setAttribute('aria-pressed',String(gameSound));}
-function startGame(sound){gameSound=sound;document.getElementById('game-welcome').close();updateSoundButton();if(sound)gameTone([[523,0,.09],[784,.11,.09],[1047,.22,.16],[1319,.40,.12]]);}
-function toggleGameSound(){gameSound=!gameSound;updateSoundButton();if(gameSound)gameTone([[880,0,.07],[1320,.08,.11]]);}
-document.addEventListener('click',event=>{
- const target=event.target.closest('button');if(!target||target.closest('#game-welcome')||target.id==='sound-control')return;
- if(target.id==='submitBtn')gameTone([[440,0,.06],[660,.08,.06],[880,.16,.09]]);
- else if(target.classList.contains('teacher-option'))gameTone([[1047,0,.05],[1568,.06,.07]]);
- else gameTone([[620,0,.035],[930,.04,.045]]);
-});
-document.addEventListener('DOMContentLoaded',()=>document.getElementById('game-welcome').showModal());
-</script>
+<script src="./game-audio.js"></script>
+<script src="./bulk-opr.js"></script>
 <dialog id="install-help" class="no-print"><h2>PASANG SUPER OPR</h2><p>Android / komputer: buka laman dalam Chrome atau Edge, kemudian pilih menu Pasang aplikasi / Install app apabila tersedia.</p><p>iPhone / iPad: buka dalam Safari, pilih Kongsi, kemudian Tambah ke Skrin Utama (Add to Home Screen).</p><button class="start-game" type="button" onclick="document.getElementById('install-help').close()">Baik</button></dialog>
 <script src="./pwa.js"></script>
 </body>
