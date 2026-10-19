@@ -274,7 +274,7 @@
 
 </style>
 
-<link rel="stylesheet" href="./mario-edition.css">
+<link rel="stylesheet" href="./mario-edition.css?v=4">
 </head>
 
 <body class="min-h-screen flex flex-col text-slate-800">
@@ -452,6 +452,11 @@
 
 
 
+                    <div>
+                        <label for="jumlahMuridHantar" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Jumlah Murid Menghantar Tugasan <span class="text-red-500">*</span></label>
+                        <input type="number" id="jumlahMuridHantar" min="0" max="10000" step="1" required inputmode="numeric" placeholder="Contoh: 28" class="w-full bg-slate-50 border border-slate-300 text-sm rounded-xl p-3">
+                        <p class="text-xs text-slate-500 mt-1">Masukkan bilangan murid yang telah menghantar tugasan. Isi 0 jika tiada.</p>
+                    </div>
                     <!-- Tajuk / Aktiviti -->
 
                     <div>
@@ -580,7 +585,7 @@
 
                     </button>
                     <button type="button" onclick="printCurrentOPR()" class="px-5 py-2 rounded-xl bg-johorBlue text-white text-xs font-bold">Cetak A4</button>
-                    <a id="single-pdf-download" data-opr-pdf-link hidden download target="_blank" rel="noopener" class="opr-download-link">⬇ Muat turun PDF di sini</a>
+                    <a id="single-pdf-download" data-opr-pdf-link hidden download class="opr-download-link">⬇ Muat turun PDF di sini</a>
                     <span id="single-pdf-status" role="status" class="text-xs text-slate-600"></span>
 
 
@@ -692,6 +697,10 @@
 
                             </div>
 
+                            <div class="mt-3 flex gap-2">
+                                <span class="font-bold text-johorBlue">JUMLAH MURID MENGHANTAR TUGASAN:</span>
+                                <span id="opr-out-jumlah-murid" class="font-semibold text-slate-800">Belum direkodkan</span>
+                            </div>
                         </div>
 
 
@@ -769,7 +778,7 @@
                     </div>
                     <p id="bulk-count" aria-live="polite">0 laporan dipilih</p>
                     <p id="bulk-progress" role="status" aria-live="polite"></p>
-                    <a id="bulk-download" data-opr-pdf-link hidden download target="_blank" rel="noopener" class="opr-download-link">⬇ Muat turun PDF pukal</a>
+                    <a id="bulk-download" data-opr-pdf-link hidden download class="opr-download-link">⬇ Muat turun PDF pukal</a>
                 </div>
                 <!-- Filters Bar -->
 
@@ -1038,6 +1047,9 @@
 
             const tajuk = document.getElementById('tajuk').value.trim();
             const objektif = document.getElementById('objektif').value.trim();
+            const jumlahRaw = document.getElementById('jumlahMuridHantar').value.trim();
+            if (!/^\d+$/.test(jumlahRaw) || Number(jumlahRaw) > 10000) { alert('Sila isi jumlah murid sebagai nombor bulat antara 0 hingga 10000.'); return null; }
+            const jumlahMuridHantar = Number(jumlahRaw);
 
 
 
@@ -1075,6 +1087,7 @@
 
                 tajuk,
                 objektif,
+                jumlahMuridHantar,
 
                 images: uploadedBase64Images.map(img => img.data),
 
@@ -1092,6 +1105,7 @@
             document.getElementById('single-pdf-status').textContent = '';
 
 
+            document.getElementById('opr-out-jumlah-murid').textContent = data.jumlahMuridHantar == null || data.jumlahMuridHantar === '' ? 'Belum direkodkan' : data.jumlahMuridHantar+' orang';
             document.getElementById('opr-out-guru').innerText = data.namaGuru || '-';
 
             document.getElementById('opr-out-subjek').innerText = data.subjek || '-';
@@ -1163,21 +1177,31 @@
 
 
 
+        let studentCountBackendReady = false;
+        async function ensureStudentCountBackend() {
+            if (studentCountBackendReady) return;
+            const response = await fetch(APPS_SCRIPT_URL+'?action=capabilities&t='+Date.now(),{cache:'no-store',redirect:'follow'});
+            if (!response.ok) throw new Error('HTTP '+response.status);
+            const result = await response.json();
+            if (!result.studentCount || result.schemaVersion < 4) throw new Error('Sila gantikan Code.gs, jalankan setup dan deploy New version untuk menyimpan jumlah murid.');
+            studentCountBackendReady = true;
+        }
         let pendingSave = null;
         async function handleFormSubmit(event) {
             if (!navigator.onLine) { event.preventDefault(); alert('Sambungkan internet untuk menyimpan laporan. Kandungan borang masih dikekalkan.'); return; }
             event.preventDefault();
             const record = getFormData(); if (!record) return;
-            const fingerprint = JSON.stringify([record.namaGuru,record.subjek,record.kelas,record.tarikh,record.tajuk,record.objektif,record.images]);
+            const fingerprint = JSON.stringify([record.namaGuru,record.subjek,record.kelas,record.tarikh,record.tajuk,record.objektif,record.jumlahMuridHantar,record.images]);
             if (pendingSave && pendingSave.fingerprint === fingerprint) record.id = pendingSave.id;
             pendingSave = {id:record.id, fingerprint};
             const btn = document.getElementById('submitBtn'), original = btn.innerHTML;
             btn.disabled = true; btn.textContent = 'Menyimpan data dan gambar...';
             renderOprDocument(record);
             try {
+                await ensureStudentCountBackend();
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, redirect:'follow',
-                    body:JSON.stringify({action:'saveOPR',id:record.id,namaGuru:record.namaGuru,subjek:record.subjek,kelas:record.kelas,tarikh:record.tarikh,tajuk:record.tajuk,objektif:record.objektif,images:uploadedBase64Images})
+                    body:JSON.stringify({action:'saveOPR',id:record.id,namaGuru:record.namaGuru,subjek:record.subjek,kelas:record.kelas,tarikh:record.tarikh,tajuk:record.tajuk,objektif:record.objektif,jumlahMuridHantar:record.jumlahMuridHantar,images:uploadedBase64Images})
                 });
                 if (!response.ok) throw new Error('HTTP '+response.status);
                 const result = await response.json();
@@ -1614,10 +1638,11 @@ function printOnePage() { return OPRPDF.downloadSingle(); }
 function printCurrentOPR() { preparePrintScale();window.print(); }
 window.addEventListener('beforeprint',preparePrintScale);
 </script>
-<script src="./game-audio.js"></script>
+<script src="./game-audio.js?v=4"></script>
 <script src="./assets/vendor/jspdf.umd.min.js"></script>
-<script src="./pdf-export.js"></script>
-<script src="./bulk-opr.js"></script>
+<script src="./pdf-assets.js?v=4"></script>
+<script src="./pdf-export.js?v=4"></script>
+<script src="./bulk-opr.js?v=4"></script>
 <dialog id="install-help" class="no-print"><h2>PASANG SUPER OPR</h2><p>Android / komputer: buka laman dalam Chrome atau Edge, kemudian pilih menu Pasang aplikasi / Install app apabila tersedia.</p><p>iPhone / iPad: buka dalam Safari, pilih Kongsi, kemudian Tambah ke Skrin Utama (Add to Home Screen).</p><button class="start-game" type="button" onclick="document.getElementById('install-help').close()">Baik</button></dialog>
 <script src="./pwa.js"></script>
 </body>

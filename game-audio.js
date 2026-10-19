@@ -78,8 +78,22 @@ function toggleGameSound() {
   gameSound = !gameSound; updateSoundButton(); if (gameSound) playGameEffect('coin');
 }
 document.addEventListener('click', event => {
-  const button = event.target.closest('button');
+  const button = event.target.closest('button, a[data-opr-pdf-link]');
   if (!button || button.disabled || button.closest('#game-welcome') || button.id === 'sound-control') return;
   playGameButtonSound(button);
 }, true);
 document.addEventListener('DOMContentLoaded', () => document.getElementById('game-welcome').showModal());
+// Native selects and date pickers do not emit button clicks.
+const OPR_FIELD_EFFECTS = {subjek:'star',kelas:'coin',tarikh:'jump',filterSubjek:'star',filterKelas:'coin'};
+document.addEventListener('pointerdown', event => {
+  const field = event.target.closest('select,input[type="date"]');
+  if (field && !field.disabled && OPR_FIELD_EFFECTS[field.id]) playGameEffect('select',-2);
+}, true);
+document.addEventListener('change', event => {
+  const field = event.target;
+  if (OPR_FIELD_EFFECTS[field.id] && !field.disabled) playGameEffect(OPR_FIELD_EFFECTS[field.id]);
+}, true);
+document.addEventListener('keydown', event => {
+  const field = event.target;
+  if (OPR_FIELD_EFFECTS[field.id] && !field.disabled && ['Enter',' '].includes(event.key)) playGameEffect('select');
+}, true);

@@ -83,3 +83,7 @@
 .hero-title p {font:700 clamp(8px,1.5vw,17px)/1.8 'Fredoka',sans-serif;letter-spacing:.08em;color:#fff;margin:7px 0 0;text-shadow:2px 2px #172b53;}
 @media(max-width:700px) {.mario-hero-art .hero-title {top:24%;text-shadow:1px 2px #b84a39,2px 3px #172b53;}.hero-title p {margin-top:3px;}}
 }
+
+@media screen {.opr-download-link{display:inline-block;padding:10px 14px;margin-top:8px;color:#172b53;background:#fcd116;border:2px solid #172b53;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:2px 3px #172b53}.opr-download-link:hover{filter:brightness(1.06)}.opr-download-link[hidden]{display:none!important}}
+
+@media screen {.preview-export-actions{max-width:100%;flex-wrap:wrap}.preview-export-actions #single-pdf-status{flex-basis:100%;line-height:1.5}.preview-export-actions button{white-space:normal;max-width:100%}}

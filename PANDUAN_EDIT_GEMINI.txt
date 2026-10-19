@@ -1,14 +1,13 @@
-SISTEM SUPER OPR SK SUNGAI TIRAM — MARIO EDITION PWA
+SUPER OPR SK SUNGAI TIRAM — MARIO EDITION PWA, PDF v4
 
-Untuk edit paparan dalam Gemini, berikan KOD_HTML_UNTUK_GEMINI.txt dan KOD_CSS_UNTUK_GEMINI.txt bersama arahan perubahan. Sertakan assets/header-mario-opr.png dan assets/lencana-pixel.png jika mahu mengubah gambar.
+Untuk paparan: berikan KOD_HTML_UNTUK_GEMINI.txt dan KOD_CSS_UNTUK_GEMINI.txt.
+Untuk PDF: sertakan pdf-export.js dan bulk-opr.js. PDF mesti dijana terus sebagai fail dengan satu OPR setiap halaman A4; jangan gantikan dengan window.print atau popup sahaja.
+Untuk audio: sertakan game-audio.js.
+Untuk simpanan data/gambar dan admin: sertakan KOD_APPS_SCRIPT_UNTUK_GEMINI.txt.
+Untuk PWA: sertakan pwa.js, sw.js dan manifest.webmanifest.
 
-Kod HTML mengandungi fungsi sistem sedia ada. Gaya Mario berada dalam mario-edition.css. Minta Gemini pulangkan kedua-dua fail penuh dan kekalkan laluan fail dalam pakej.
+Kekalkan getBulkRecords dan verifyAdmin dengan pengesahan requireAdmin_ di backend. PDF pukal hanya boleh dijana selepas admin log masuk. Kekalkan semua URL API/CSV, struktur data, carian guru, objektif, tiga gambar bersebelahan, grafik, ikon serta fungsi sedia ada.
 
-Untuk edit simpanan data/gambar atau admin, sertakan KOD_APPS_SCRIPT_UNTUK_GEMINI.txt. Untuk edit fungsi pemasangan atau cache PWA, sertakan pwa.js, sw.js dan manifest.webmanifest.
+Minta Gemini mengembalikan fail lengkap yang diubah. Kekalkan folder assets/vendor dan font tempatan. Naikkan versi cache sw.js selepas mengubah frontend. Salinan .txt adalah untuk berkongsi kod, bukan untuk diterbitkan sebagai index.html.
 
-Pastikan Gemini mengekalkan URL Apps Script, CSV guru/subjek/kelas, struktur data, objektif pembelajaran, carian guru dengan cadangan, Arkib OPR tanpa previu gambar, tiga gambar pada laporan, cetakan A4 satu halaman serta pengesahan admin di backend.
-
-Selepas edit, gunakan index.html dan mario-edition.css pada laman web. Jangan terbitkan fail .txt sebagai pengganti index.html. Jika senarai fail statik berubah, kemas kini FILES dalam sw.js dan naikkan versi CACHE_NAME.
-
-VERSI PUKAL + AUDIO
-Sertakan juga bulk-opr.js dan game-audio.js apabila meminta Gemini mengubah fungsi pukal atau bunyi. Backend Code.gs versi ini perlu dideploy New version. Jangan buang pengesahan requireAdmin_ pada getBulkRecords dan verifyAdmin. Kekalkan satu laporan bagi setiap halaman A4 dan paparan fungsi pukal hanya selepas admin log masuk.
+PDF v4: kekalkan pdf-assets.js dimuat sebelum pdf-export.js. Pengendali downloadSingle mesti menjana/save secara segerak semasa klik, tanpa await/fetch/timer. Kekalkan medan jumlahMuridHantar dari borang hingga Code.gs, kolum M, arkib dan PDF. Fon/lencana asal di dalam pdf-assets.js tidak perlu diubah jika tiada pertukaran grafik.

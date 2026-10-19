@@ -5,7 +5,7 @@ const CONFIG = Object.freeze({
   sheetName: 'DATA_OPR',
   timezone: 'Asia/Kuala_Lumpur'
 });
-const HEADERS = ['ID', 'TIMESTAMP', 'NAMA GURU', 'SUBJEK', 'KELAS', 'TARIKH', 'TAJUK', 'GAMBAR 1 ID', 'GAMBAR 2 ID', 'GAMBAR 3 ID', 'FOLDER URL', 'OBJEKTIF PEMBELAJARAN'];
+const HEADERS = ['ID', 'TIMESTAMP', 'NAMA GURU', 'SUBJEK', 'KELAS', 'TARIKH', 'TAJUK', 'GAMBAR 1 ID', 'GAMBAR 2 ID', 'GAMBAR 3 ID', 'FOLDER URL', 'OBJEKTIF PEMBELAJARAN', 'JUMLAH MURID MENGHANTAR TUGASAN'];
 function json_(value) {
   return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -20,6 +20,8 @@ function sheet_() {
   if (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length-sheet.getMaxColumns());
   const oldHeaders = sheet.getRange(1,1,1,11).getDisplayValues()[0];
   if (oldHeaders.join('|') === HEADERS.slice(0,11).join('|') && !sheet.getRange(1,12).getDisplayValue()) sheet.getRange(1,12).setValue(HEADERS[11]);
+  const previousHeaders = sheet.getRange(1,1,1,12).getDisplayValues()[0];
+  if (previousHeaders.join('|') === HEADERS.slice(0,12).join('|') && !sheet.getRange(1,13).getDisplayValue()) sheet.getRange(1,13).setValue(HEADERS[12]);
   const actual = sheet.getRange(1, 1, 1, HEADERS.length).getDisplayValues()[0];
   if (actual.join('|') !== HEADERS.join('|')) throw new Error('Header DATA_OPR tidak sepadan. Namakan semula tab lama sebelum menjalankan setup.');
   return sheet;
@@ -31,7 +33,7 @@ function setup() {
   console.log('Sedia: ' + sheet.getName() + ' / ' + folder.getName());
 }
 function record_(row) {
-  return {id: row[0], timestamp: row[1], namaGuru: row[2], subjek: row[3], kelas: row[4], tarikh: row[5], tajuk: row[6], objektif: row[11] || '', imageIds: row.slice(7, 10), folderUrl: row[10], cloudSaved: true};
+  return {id: row[0], timestamp: row[1], namaGuru: row[2], subjek: row[3], kelas: row[4], tarikh: row[5], tajuk: row[6], objektif: row[11] || '', jumlahMuridHantar: row[12] == null || row[12] === '' ? '' : Number(row[12]), imageIds: row.slice(7, 10), folderUrl: row[10], cloudSaved: true};
 }
 function records_() {
   const sheet = sheet_();
@@ -40,6 +42,7 @@ function records_() {
 function doGet(e) {
   try {
     const params = (e && e.parameter) || {};
+    if (params.action === 'capabilities') return json_({status:'success',schemaVersion:4,studentCount:true});
     if (params.action === 'getRecords') return json_(records_());
     if (params.action === 'getThumbnail') {
       const record = records_().find(r => r.id === params.id);
@@ -73,6 +76,11 @@ function text_(value, label, limit) {
 }
 // Elakkan teks guru/tajuk menjadi formula dalam Google Sheet.
 function safeCell_(text) { return /^[=+@-]/.test(text) ? "'" + text : text; }
+function studentCount_(value) {
+  if (value == null || value === '') return ''; // Older reports/clients remain readable.
+  if (!/^\d+$/.test(String(value)) || !Number.isSafeInteger(Number(value)) || Number(value) > 10000) throw new Error('Jumlah murid mesti nombor bulat antara 0 hingga 10000.');
+  return Number(value);
+}
 function validateImages_(images) {
   if (!Array.isArray(images) || images.length !== 3) throw new Error('Tepat 3 gambar diperlukan.');
   return images.map((image, index) => {
@@ -106,6 +114,7 @@ function doPost(e) {
     const tajuk = text_(payload.tajuk, 'Tajuk', 5000);
     const objektif = String(payload.objektif || '').trim();
     if (objektif.length > 5000) throw new Error('Objektif maksimum 5000 aksara.');
+    const jumlahMuridHantar = studentCount_(payload.jumlahMuridHantar);
     const images = validateImages_(payload.images);
     lock.waitLock(30000); acquired = true;
     const sheet = sheet_();
@@ -114,7 +123,7 @@ function doPost(e) {
     folder = DriveApp.getFolderById(CONFIG.folderId).createFolder(id + '_' + tarikh);
     const imageIds = images.map((image, i) => folder.createFile(Utilities.newBlob(image.bytes, image.mime, 'Gambar_' + (i + 1) + '.' + image.ext)).getId());
     const timestamp = Utilities.formatDate(new Date(), CONFIG.timezone, 'yyyy-MM-dd HH:mm:ss');
-    const row = [id, timestamp, safeCell_(guru), safeCell_(subjek), safeCell_(kelas), tarikh, safeCell_(tajuk)].concat(imageIds, [folder.getUrl(), safeCell_(objektif)]);
+    const row = [id, timestamp, safeCell_(guru), safeCell_(subjek), safeCell_(kelas), tarikh, safeCell_(tajuk)].concat(imageIds, [folder.getUrl(), safeCell_(objektif), jumlahMuridHantar]);
     const next = sheet.getLastRow() + 1;
     sheet.getRange(next, 1, 1, HEADERS.length).setNumberFormat('@').setValues([row]);
     committed = true;

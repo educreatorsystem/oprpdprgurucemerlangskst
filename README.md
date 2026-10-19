@@ -1,56 +1,68 @@
-# Super OPR SK Sungai Tiram — Mario Edition PWA
+# Super OPR SK Sungai Tiram — Mario Edition PWA (PDF klik terus v4)
 
-Tema mengikuti laman PdPR Cikgu Heryani: langit biru, header dunia permainan, toolbar navy, butang merah/kuning/hijau, font Press Start 2P dan Fredoka, kad berbingkai serta bayang timbul. Header telefon dipaparkan penuh; navigasi tiga tab kekal dalam header utama.
+## Pembetulan utama
 
-## Muat naik ke GitHub Pages
+PDF kini dijana sebagai fail PDF sebenar di dalam aplikasi menggunakan jsPDF yang disertakan secara tempatan. Ia tidak memerlukan popup, penangkapan skrin, CDN atau dialog cetak pelayar. Font Fredoka dan lencana asal dibenamkan dalam fail PDF. Teks kekal boleh dipilih. Tiga gambar berada bersebelahan, tanpa dipotong. Setiap laporan menggunakan satu halaman A4; kandungan panjang diskalakan untuk muat.
 
-1. Ekstrak ZIP.
-2. Muat naik `index.html`, `mario-edition.css`, `pwa.js`, `bulk-opr.js`, `game-audio.js`, `sw.js`, `offline.html`, `manifest.webmanifest` serta folder `assets` dan `icons` ke folder laman yang sama. Jangan muat naik ZIP sahaja.
-3. Pastikan GitHub Pages aktif dan buka URL HTTPS laman tersebut.
-4. Muat semula laman, kemudian pilih **PASANG APP** apabila pilihan pemasangan tersedia. Pada iPhone/iPad gunakan Safari > Kongsi > Tambah ke Skrin Utama.
+Grafik header, lencana PWA, latar, carian guru, input objektif, Arkib OPR, simpanan data/gambar, admin, padam dan bunyi permainan dikekalkan.
 
-Laluan manifest, start_url dan scope adalah relatif supaya serasi dengan repositori GitHub Pages di subfolder.
+## Muat naik ke GitHub
 
-## Ikon sekolah piksel
+1. Ekstrak ZIP baharu.
+2. Gantikan semua fail frontend: index.html, mario-edition.css, pwa.js, bulk-opr.js, game-audio.js, pdf-assets.js, pdf-export.js, sw.js, manifest.webmanifest, offline.html serta folder assets dan icons.
+3. Pastikan folder baharu assets/vendor turut dimuat naik. Fail jspdf.umd.min.js diperlukan untuk PDF; jangan muat naik ZIP sahaja.
+4. Buka laman GitHub Pages melalui HTTPS. Simpan kerja dan pilih Kemas kini apabila notis PWA muncul. Jika paparan masih lama, muat semula halaman dengan cache dikosongkan atau buka URL dalam tab baharu selepas deployment selesai.
 
-`assets/lencana-pixel.png` ialah versi seni piksel lencana SK Sungai Tiram. Ikon 192px/512px dan ikon Apple 180px menggunakan imej itu. Ikon maskable mempunyai ruang selamat untuk potongan bulat. Header menggunakan versi piksel; cetakan laporan menggunakan lencana asal.
+Versi cache: mario-v4-click-count-sound. Jangan buang parameter ?v=4 pada pautan aset dalam HTML. Laluan aplikasi relatif untuk menyokong GitHub Pages di subfolder.
 
-## PWA dan internet
+## PDF satu laporan
 
-Font, ikon, gaya dan header disertakan secara tempatan. Selepas lawatan pertama berjaya dan service worker dipasang, rangka aplikasi boleh dibuka luar talian. Senarai guru/subjek/kelas, simpanan laporan, gambar awan, log masuk admin dan pemadaman memerlukan internet. PWA tidak menyimpan permintaan API Google dalam cache service worker. Kaedah simpanan sedia ada dikekalkan. Pengesahan admin ditambah pada laluan baharu getBulkRecords dan verifyAdmin.
+1. Jana Pra-tonton OPR atau buka satu laporan penuh daripada Arkib OPR.
+2. Klik Muat turun PDF.
+3. Jika pelayar tidak memuat turun secara automatik, klik pautan kuning Muat turun PDF di sini. Pada peranti yang membuka fail dalam pemapar PDF, gunakan menu simpan/kongsi pemapar tersebut.
+4. Butang Cetak A4 kekal tersedia sebagai pilihan cetakan fizikal melalui pelayar.
 
-Versi baharu akan menawarkan butang kemas kini. Simpan laporan sebelum memilihnya kerana halaman akan dimuat semula. Untuk perubahan masa depan, naikkan nombor versi cache dalam `sw.js`.
+## PDF pukal — hanya admin
+
+1. Dalam Arkib OPR, log masuk sebagai admin menggunakan akaun sedia ada.
+2. Gunakan tapisan guru, kelas, subjek atau carian tarikh/tajuk. Tandakan laporan pada kad atau klik Pilih semua dalam tapisan. Pilihan terdahulu kekal walaupun tapisan berubah; jumlah pilihan dipaparkan.
+3. Klik Jana OPR Pukal / PDF. Tunggu status pengambilan rekod dan penjanaan selesai.
+4. Fail PDF mengandungi semua laporan pilihan, satu OPR setiap halaman. Klik pautan Muat turun PDF pukal untuk menyimpan fail.
+
+Pengesahan token admin dibuat oleh Apps Script semasa mengambil setiap kelompok dan sebelum mengeluarkan PDF siap. Log keluar, sesi tamat atau pembatalan memadamkan pautan muat turun pukal. Kegagalan gambar atau rekod menghentikan penjanaan tanpa menawarkan fail separa. Tiada salinan laporan ditulis ke Google Sheet semasa menjana PDF.
 
 ## Apps Script
 
-**Untuk versi pukal ini, gantikan Code.gs dalam projek Apps Script sedia ada.** Simpan kod, kemudian Deploy > Manage deployments > Edit > pilih New version > Deploy. Kekalkan URL Web App yang sama, Execute as: Me dan akses Anyone seperti pemasangan sedia ada. Tidak perlu menjalankan resetAdmin; akaun dan sesi admin sedia ada dikekalkan. appsscript.json tidak berubah. Pengesahan sesi admin dilakukan oleh backend bagi setiap permintaan pukal dan sebelum cetakan. Kod backend ini disertakan untuk rujukan peribadi; jangan muat naik Code.gs atau salinan TXT backend ke repositori awam.
+Versi v4 memerlukan Code.gs baharu untuk menyimpan jumlah murid. Gantikan Code.gs dalam projek sedia ada, jalankan setup, kemudian Deploy > Manage deployments > Edit > New version > Deploy menggunakan URL Web App yang sama. Tidak perlu resetAdmin. appsscript.json tidak berubah. Migrasi menambah kolum M secara automatik tanpa mengalih gambar atau objektif sedia ada. Frontend menyemak capabilities sebelum menyimpan supaya jumlah murid tidak hilang jika deployment masih lama.
+
+Code.gs dan salinan TXT backend disertakan untuk rujukan peribadi; hanya fail frontend perlu dimuat naik ke repositori laman awam.
+
+## PWA, internet dan audio
+
+Pemasangan PWA dan ikon piksel sekolah dikekalkan. Modul PDF, font serta lencana dicache secara tempatan selepas lawatan pertama. PDF laporan yang telah dibuka boleh dijana daripada data dalam memori. Mengambil senarai guru, rekod/gambar awan, simpanan, log masuk dan penjanaan pukal memerlukan internet. Service worker hanya mencache fail aplikasi, bukan API Google atau PDF/data peribadi.
+
+Bunyi chiptune berbeza mengikut butang kekal berfungsi, bersama pilihan Bunyi: Aktif / Tutup. Tiada fail audio luar diperlukan.
+
+## Semakan
+
+Fail PDF sebenar diperiksa: satu halaman tunggal, tujuh halaman pukal, laporan berteks panjang serta turutan laporan. Paparan PDF dirender dan diperiksa. Ujian backend dan aliran aplikasi meliputi token wajib, sesi tamat/dibatalkan, pembatalan dan kegagalan rekod. Grafik serta templat pra-tonton asal dikekalkan. Sambungan langsung Google dan tingkah laku muat turun pada peranti sebenar belum diuji di sini.
 
 ## Edit dalam Gemini
 
-Lihat PANDUAN_EDIT_GEMINI.txt. Untuk paparan, beri fail KOD_HTML_UNTUK_GEMINI.txt dan KOD_CSS_UNTUK_GEMINI.txt bersama arahan. Salinan TXT disertakan untuk memudahkan perkongsian kod, bukan sebagai fail penerbitan.
+Sertakan KOD_HTML_UNTUK_GEMINI.txt, KOD_CSS_UNTUK_GEMINI.txt serta fail JavaScript berkaitan. Rujuk PANDUAN_EDIT_GEMINI.txt.
 
-## Pengesahan
+## Pembetulan klik v4
 
-Kod JavaScript, fail manifest, dimensi ikon, pautan aset tempatan dan peraturan cache service worker telah diperiksa. Ujian pemasangan PWA pada peranti sebenar dan sambungan Google perlu dibuat selepas muat naik; versi ini tidak diterbitkan secara automatik.
+Fail pdf-assets.js menyediakan font dan lencana sebelum butang ditekan. Butang Muat turun PDF menjana fail serta memanggil kaedah save secara segerak daripada klik asal, tanpa await, fetch atau timer dalam pengendali klik itu. Pautan muat turun sandaran kekal tersedia tanpa target popup. Muat naik pdf-assets.js bersama fail yang lain.
 
-## Jana OPR Pukal — khusus admin
+## Jumlah murid
 
-1. Buka Arkib OPR dan Log Masuk Admin menggunakan akaun sedia ada.
-2. Tapis nama guru, subjek, kelas atau tarikh/tajuk seperti biasa.
-3. Tandakan kotak Pilih untuk OPR pukal pada kad, atau pilih Pilih semua dalam tapisan. Pilihan terdahulu kekal walaupun tapisan berubah; jumlah pilihan dipaparkan. Kosongkan pilihan untuk memulakan semula.
-4. Tekan Jana OPR Pukal / PDF. Benarkan popup bagi laman ini.
-5. Tunggu semua laporan dan gambar siap dalam tetingkap baharu. Klik Cetak / Simpan PDF, kemudian pilih Save as PDF dalam dialog cetak. Tetapkan kertas A4, skala 100%, margin tiada dan matikan header/footer pelayar jika ditawarkan. Satu OPR menggunakan satu halaman; laporan panjang diskalakan.
+Borang mempunyai medan wajib Jumlah Murid Menghantar Tugasan. Masukkan nombor bulat 0 hingga 10000; sifar ialah nilai sah. Jumlah ini disimpan di kolum M, diambil semula bersama arkib, dan muncul dalam pra-tonton, cetakan serta PDF tunggal/pukal. Rekod lama tanpa nilai dipaparkan sebagai Belum direkodkan. Teks jumlah diisi oleh guru, bukan dikira daripada sistem tugasan lain.
 
-Rekod diambil tiga laporan pada satu masa; jumlah pilihan tidak dihadkan kepada tiga. Borang asal tidak diubah dan tiada salinan rekod ditulis ke Google Sheet. Tiada PDF separa disediakan apabila rekod/gambar gagal dimuatkan. Pilihan Batal penjanaan menghentikan operasi. Log keluar atau sesi tamat akan menutup previu pukal. Data pukal menggunakan POST dan tidak dicache oleh service worker.
+## Bunyi pilihan
 
-## Bunyi butang
+Pilihan subjek, kelas dan tarikh kini memainkan kesan ketika pemilih dibuka dan selepas nilai dipilih. Penapis subjek dan kelas dalam arkib turut disokong. Bunyi hanya dimainkan apabila Bunyi: Aktif; pilihan Tutup tetap berfungsi.
 
-Setiap butang menggunakan kesan chiptune setempat mengikut tindakan: syiling, lompat, blok, paip, power-up, bintang, akses admin, reset dan padam. Tekanan berulang turut mempunyai variasi pic kecil. Pilih Mula dengan bunyi atau aktifkan Bunyi: Aktif untuk mendengar. Pilihan Bunyi: Tutup kekal berfungsi. Bunyi dijana melalui Web Audio; tiada fail audio luar atau rakaman rasmi permainan diperlukan.
+## Pengesahan v4
 
-## Kemas kini PWA
-
-Muat naik semua fail frontend dalam pakej dan gunakan versi cache mario-v2-bulk-audio dalam sw.js. Selepas laman baharu diterbitkan, simpan kerja dan tekan Kemas kini apabila notis muncul. Grafik, lencana, header serta fungsi laporan tunggal dikekalkan.
-
-## Pengesahan versi pukal
-
-Ujian simulasi meliputi akaun admin sedia ada, token tidak sah, sesi tamat/dibatalkan, pilihan merentas tapisan, tujuh laporan melalui tiga permintaan, pembatalan, gambar/rekod gagal dan ketiadaan cetakan separa. Grafik asal serta templat laporan tunggal dibandingkan dengan pakej sebelum kemas kini dan sepadan. Pengesahan kod, fail cache dan keluarga bunyi turut lulus. Cetakan fizikal/PDF serta sambungan Google sebenar perlu diuji selepas deployment; ujian di sini menggunakan simulasi backend dan aliran aplikasi.
+Pengendali butang diuji dengan modul jsPDF sebenar: save dipanggil terus dalam panggilan klik, tanpa await, timer atau fetch. Ujian 0/28 murid, migrasi 11/12 kolum kepada 13, rekod lama, nombor tidak sah dan kawalan admin turut lulus. Fail PDF satu dan tujuh halaman diperiksa dengan jumlah murid. Penjanaan dan logik muat turun diuji dalam persekitaran JavaScript simulasi; tingkah laku simpan fail pada peranti cikgu masih bergantung pada pelayar.
