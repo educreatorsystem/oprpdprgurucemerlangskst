@@ -566,7 +566,7 @@
 
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex flex-wrap items-center gap-2 preview-export-actions">
 
                     <button onclick="switchTab('form')" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold">
 
@@ -574,11 +574,15 @@
 
                     </button>
 
-                    <button onclick="printOnePage()" class="px-5 py-2 rounded-xl bg-johorRed hover:bg-red-700 text-white text-xs font-bold shadow flex items-center gap-1.5 transition">
+                    <button id="single-pdf-button" type="button" onclick="printOnePage()" class="px-5 py-2 rounded-xl bg-johorRed hover:bg-red-700 text-white text-xs font-bold shadow flex items-center gap-1.5 transition">
 
-                        <i class="fa-solid fa-print"></i> Cetak A4 / Simpan PDF
+                        <i class="fa-solid fa-file-pdf"></i> Muat turun PDF
 
                     </button>
+                    <button type="button" onclick="printCurrentOPR()" class="px-5 py-2 rounded-xl bg-johorBlue text-white text-xs font-bold">Cetak A4</button>
+                    <a id="single-pdf-download" data-opr-pdf-link hidden download target="_blank" rel="noopener" class="opr-download-link">⬇ Muat turun PDF di sini</a>
+                    <span id="single-pdf-status" role="status" class="text-xs text-slate-600"></span>
+
 
                 </div>
 
@@ -765,6 +769,7 @@
                     </div>
                     <p id="bulk-count" aria-live="polite">0 laporan dipilih</p>
                     <p id="bulk-progress" role="status" aria-live="polite"></p>
+                    <a id="bulk-download" data-opr-pdf-link hidden download target="_blank" rel="noopener" class="opr-download-link">⬇ Muat turun PDF pukal</a>
                 </div>
                 <!-- Filters Bar -->
 
@@ -853,6 +858,7 @@
 
         // Application State Variables
 
+        let currentPreviewRecord = null;
         let uploadedBase64Images = [];
 
         let savedRecordsList = [];
@@ -1081,6 +1087,10 @@
 
 
         function renderOprDocument(data) {
+            currentPreviewRecord = {...data,images:[...(data.images || [])]};
+            if (window.OPRPDF) OPRPDF.clearDownload('single-pdf-download');
+            document.getElementById('single-pdf-status').textContent = '';
+
 
             document.getElementById('opr-out-guru').innerText = data.namaGuru || '-';
 
@@ -1600,14 +1610,13 @@ function preparePrintScale() {
     const scale=Math.min(1,(maxHeight-4)/Math.max(clone.scrollHeight,clone.getBoundingClientRect().height));
     original.style.setProperty('--opr-print-scale',String(scale));clone.remove();
 }
-async function printOnePage() {
-    if(document.fonts)await document.fonts.ready;
-    await Promise.all([...document.querySelectorAll('#opr-template img')].map(img=>img.decode?.().catch(()=>{})));
-    preparePrintScale();window.print();
-}
+function printOnePage() { return OPRPDF.downloadSingle(); }
+function printCurrentOPR() { preparePrintScale();window.print(); }
 window.addEventListener('beforeprint',preparePrintScale);
 </script>
 <script src="./game-audio.js"></script>
+<script src="./assets/vendor/jspdf.umd.min.js"></script>
+<script src="./pdf-export.js"></script>
 <script src="./bulk-opr.js"></script>
 <dialog id="install-help" class="no-print"><h2>PASANG SUPER OPR</h2><p>Android / komputer: buka laman dalam Chrome atau Edge, kemudian pilih menu Pasang aplikasi / Install app apabila tersedia.</p><p>iPhone / iPad: buka dalam Safari, pilih Kongsi, kemudian Tambah ke Skrin Utama (Add to Home Screen).</p><button class="start-game" type="button" onclick="document.getElementById('install-help').close()">Baik</button></dialog>
 <script src="./pwa.js"></script>
